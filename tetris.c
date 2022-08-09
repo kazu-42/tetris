@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 #define ROW 20
-#define COLUMN 15
+#define COL 15
 
 typedef enum e_key{
 	TETROMINO_DOWN = 's',
@@ -16,8 +16,8 @@ typedef enum e_key{
 } t_key;
 
 
-char g_table[ROW][COLUMN] = {0};
-int g_final = 0;
+char g_table[ROW][COL] = {0};
+int g_score = 0;
 bool g_game_on = true;
 suseconds_t timer = 400000;
 int decrease = 1000;
@@ -65,7 +65,7 @@ bool is_valid_position(t_shape shape) {
 	int i, j;
 	for (i = 0; i < shape.width; i++) {
 		for (j = 0; j < shape.width; j++) {
-			if ((shape.col + j < 0 || shape.col + j >= COLUMN || shape.row + i >= ROW)) {
+			if ((shape.col + j < 0 || shape.col + j >= COL || shape.row + i >= ROW)) {
 				if (array[i][j])
 					return false;
 
@@ -89,7 +89,7 @@ void rotate_shape(t_shape shape) {
 }
 
 void print_tetris() {
-	char buffer[ROW][COLUMN] = {0};
+	char buffer[ROW][COL] = {0};
 	int i, j;
 	for (i = 0; i < current.width; i++) {
 		for (j = 0; j < current.width; j++) {
@@ -98,16 +98,16 @@ void print_tetris() {
 		}
 	}
 	clear();
-	for (i = 0; i < COLUMN - 9; i++)
+	for (i = 0; i < COL - 9; i++)
 		printw(" ");
 	printw("42 Tetris\n");
 	for (i = 0; i < ROW; i++) {
-		for (j = 0; j < COLUMN; j++) {
+		for (j = 0; j < COL; j++) {
 			printw("%c ", (g_table[i][j] + buffer[i][j]) ? '#' : '.');
 		}
 		printw("\n");
 	}
-	printw("\nScore: %d\n", g_final);
+	printw("\nScore: %d\n", g_score);
 }
 
 struct timeval before_now, now;
@@ -119,7 +119,7 @@ int has_to_update() {
 
 void create_random_shape() {
 	t_shape new_shape = copy_shape(shapes[rand()%7]);
-	new_shape.col = rand()%(COLUMN-new_shape.width+1);
+	new_shape.col = rand()%(COL-new_shape.width+1);
 	new_shape.row = 0;
 	destroy_shape(current);
 	current = new_shape;
@@ -128,37 +128,45 @@ void create_random_shape() {
 	}
 }
 
+void copy_current_to_table(void) {
+	int i, j;
+	for(i = 0; i < current.width ;i++){
+		for(j = 0; j < current.width ; j++){
+			if(current.array[i][j])
+				g_table[current.row+i][current.col+j] = current.array[i][j];
+		}
+	}
+}
+
+void clear_lines(void) {
+	int n, m, sum, count=0;
+	for(n=0;n<ROW;n++){
+		sum = 0;
+		for(m=0;m< COL;m++) {
+			sum+=g_table[n][m];
+		}
+		if(sum==COL){
+			count++;
+			int l, k;
+			for(k = n;k >=1;k--)
+				for(l=0;l<COL;l++)
+					g_table[k][l]=g_table[k-1][l];
+			for(l=0;l<COL;l++)
+				g_table[k][l]=0;
+			timer-=decrease--;
+		}
+	}
+	g_score += 100*count;
+}
+
 void move_down(void) {
 	t_shape temp = copy_shape(current);
 	temp.row++;
 	if (is_valid_position(temp)) {
 		current.row++;
 	} else {
-		int i, j;
-		for(i = 0; i < current.width ;i++){
-			for(j = 0; j < current.width ; j++){
-				if(current.array[i][j])
-					g_table[current.row+i][current.col+j] = current.array[i][j];
-			}
-		}
-		int n, m, sum, count=0;
-		for(n=0;n<ROW;n++){
-			sum = 0;
-			for(m=0;m< COLUMN;m++) {
-				sum+=g_table[n][m];
-			}
-			if(sum==COLUMN){
-				count++;
-				int l, k;
-				for(k = n;k >=1;k--)
-					for(l=0;l<COLUMN;l++)
-						g_table[k][l]=g_table[k-1][l];
-				for(l=0;l<COLUMN;l++)
-					g_table[k][l]=0;
-				timer-=decrease--;
-			}
-		}
-		g_final += 100*count;
+		copy_current_to_table();
+		clear_lines();
 		create_random_shape();
 	}
 	destroy_shape(temp);
@@ -192,7 +200,7 @@ void rotate(void) {
 }
 
 void update_terminal(int input) {
-	switch (c) {
+	switch (input) {
 		case TETROMINO_DOWN:
 			move_down();
 			break;
@@ -211,13 +219,13 @@ void update_terminal(int input) {
 void print_result(void) {
 	int i, j;
 	for (i = 0; i < ROW; i++) {
-		for (j = 0; j < COLUMN; j++) {
+		for (j = 0; j < COL; j++) {
 			printf("%c ", g_table[i][j] ? '#' : '.');
 		}
 		putchar('\n');
 	}
 	printf("\nGame over!\n");
-	printf("\nScore: %d\n", g_final);
+	printf("\nScore: %d\n", g_score);
 }
 
 int main() {
