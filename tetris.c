@@ -7,7 +7,7 @@
 
 #define ROW 20
 #define COL 15
-#define FRAME_USEC 400000
+#define FRAME_INTERVAL_USEC 400000
 
 typedef enum e_key{
 	TETROMINO_DOWN = 's',
@@ -25,10 +25,10 @@ bool g_game_on = true;
 typedef struct {
 	char **array;
 	int width, row, col;
-} t_shape;
-t_shape current;
+} t_tetromino;
+t_tetromino current;
 
-const t_shape shapes[7] = {
+const t_tetromino shapes[7] = {
 		{(char *[]) {(char[]) {0, 1, 1}, (char[]) {1, 1, 0}, (char[]) {0, 0, 0}},                                 3},
 		{(char *[]) {(char[]) {1, 1, 0}, (char[]) {0, 1, 1}, (char[]) {0, 0, 0}},                                 3},
 		{(char *[]) {(char[]) {0, 1, 0}, (char[]) {1, 1, 1}, (char[]) {0, 0, 0}},                                 3},
@@ -38,21 +38,21 @@ const t_shape shapes[7] = {
 		{(char *[]) {(char[]) {0, 0, 0, 0}, (char[]) {1, 1, 1, 1}, (char[]) {0, 0, 0, 0}, (char[]) {0, 0, 0, 0}}, 4}
 };
 
-t_shape copy_shape(t_shape shape) {
-	t_shape new_shape = shape;
+t_tetromino copy_shape(t_tetromino shape) {
+	t_tetromino new_tetromino = shape;
 	char **copyshape = shape.array;
-	new_shape.array = (char **) malloc(new_shape.width * sizeof(char *));
+	new_tetromino.array = (char **) malloc(new_tetromino.width * sizeof(char *));
 	int i, j;
-	for (i = 0; i < new_shape.width; i++) {
-		new_shape.array[i] = (char *) malloc(new_shape.width * sizeof(char));
-		for (j = 0; j < new_shape.width; j++) {
-			new_shape.array[i][j] = copyshape[i][j];
+	for (i = 0; i < new_tetromino.width; i++) {
+		new_tetromino.array[i] = (char *) malloc(new_tetromino.width * sizeof(char));
+		for (j = 0; j < new_tetromino.width; j++) {
+			new_tetromino.array[i][j] = copyshape[i][j];
 		}
 	}
-	return new_shape;
+	return new_tetromino;
 }
 
-void destroy_shape(t_shape shape) {
+void destroy_shape(t_tetromino shape) {
 	int i;
 	for (i = 0; i < shape.width; i++) {
 		free(shape.array[i]);
@@ -60,7 +60,7 @@ void destroy_shape(t_shape shape) {
 	free(shape.array);
 }
 
-bool is_valid_position(t_shape shape) {
+bool is_valid_position(t_tetromino shape) {
 	char **array = shape.array;
 	int i, j;
 	for (i = 0; i < shape.width; i++) {
@@ -76,8 +76,8 @@ bool is_valid_position(t_shape shape) {
 	return true;
 }
 
-void rotate_shape(t_shape shape) {
-	t_shape temp = copy_shape(shape);
+void rotate_shape(t_tetromino shape) { //rotate_clockwise
+	t_tetromino temp = copy_shape(shape);
 	int i, j, k, width;
 	width = shape.width;
 	for (i = 0; i < width; i++) {
@@ -114,11 +114,11 @@ struct timeval before_now, now;
 
 int has_to_update() {
 	return ((suseconds_t)(now.tv_sec * 1000000 + now.tv_usec) -
-			((suseconds_t) before_now.tv_sec * 1000000 + before_now.tv_usec)) > FRAME_USEC;
+			((suseconds_t) before_now.tv_sec * 1000000 + before_now.tv_usec)) > FRAME_INTERVAL_USEC;
 }
 
-void create_random_shape() {
-	t_shape new_shape = copy_shape(shapes[rand()%7]);
+void spawn_random_tetromino() {
+	t_tetromino new_shape = copy_shape(shapes[rand()%7]);
 	new_shape.col = rand()%(COL-new_shape.width+1);
 	new_shape.row = 0;
 	destroy_shape(current);
@@ -138,41 +138,48 @@ void copy_current_to_table(void) {
 	}
 }
 
+bool is_completely_filled(int row) {
+	for(int i = 0; i < COL; i++){
+		if(!g_table[row][i])
+			return false;
+	}
+	return true;
+}
+
+void clear_line(int row) { //TODO: var i, j -> なんかいい感じの変数名に
+	int i, j;
+
+	for(j = row;j >=1;j--)
+		for(i=0;i<COL;i++)
+			g_table[j][i]=g_table[j-1][i];
+	for(i=0;i<COL;i++)
+		g_table[j][i]=0;
+}
+
 void clear_lines(void) {
-	int n, m, sum, count=0;
-	for(n=0;n<ROW;n++){
-		sum = 0;
-		for(m=0;m< COL;m++) {
-			sum+=g_table[n][m];
-		}
-		if(sum==COL){
-			count++;
-			int l, k;
-			for(k = n;k >=1;k--)
-				for(l=0;l<COL;l++)
-					g_table[k][l]=g_table[k-1][l];
-			for(l=0;l<COL;l++)
-				g_table[k][l]=0;
+	for(int n=0;n<ROW;n++){
+		if(is_completely_filled(n)){
+			clear_line(n);
+			g_score += 100;
 		}
 	}
-	g_score += 100*count;
 }
 
 void move_down(void) {
-	t_shape temp = copy_shape(current);
+	t_tetromino temp = copy_shape(current);
 	temp.row++;
 	if (is_valid_position(temp)) {
 		current.row++;
 	} else {
 		copy_current_to_table();
 		clear_lines();
-		create_random_shape();
+		spawn_random_tetromino();
 	}
 	destroy_shape(temp);
 }
 
 void move_right(void) {
-	t_shape temp = copy_shape(current);
+	t_tetromino temp = copy_shape(current);
 	temp.col++;
 	if (is_valid_position(temp)) {
 		current.col++;
@@ -181,7 +188,7 @@ void move_right(void) {
 }
 
 void move_left(void) {
-	t_shape temp = copy_shape(current);
+	t_tetromino temp = copy_shape(current);
 	temp.col--;
 	if (is_valid_position(temp)) {
 		current.col--;
@@ -189,8 +196,8 @@ void move_left(void) {
 	destroy_shape(temp);
 }
 
-void rotate(void) {
-	t_shape temp = copy_shape(current);
+void rotate(void) { //TODO: rotate_clockwise
+	t_tetromino temp = copy_shape(current);
 	rotate_shape(temp);
 	if (is_valid_position(temp)) {
 		rotate_shape(current);
@@ -232,7 +239,7 @@ int main() {
 	initscr();
 	gettimeofday(&before_now, NULL);
 	timeout(1);
-	create_random_shape();
+	spawn_random_tetromino();
 	print_tetris();
 	int key_input;
 	while (g_game_on) {
