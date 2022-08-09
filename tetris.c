@@ -108,67 +108,128 @@ int has_to_update() {
 	return ((suseconds_t)(now.tv_sec * 1000000 + now.tv_usec) -
 			((suseconds_t) before_now.tv_sec * 1000000 + before_now.tv_usec)) > timer;
 }
-
-void update_terminal(int c) {
+/*switch(c){
+				case 's':
+					temp.row++;  //move down
+					if(FunctionCP(temp))
+						current.row++;
+					else {
+						int i, j;
+						for(i = 0; i < current.width ;i++){
+							for(j = 0; j < current.width ; j++){
+								if(current.array[i][j])
+									Table[current.row+i][current.col+j] = current.array[i][j];
+							}
+						}
+						int n, m, sum, count=0;
+						for(n=0;n<R;n++){
+							sum = 0;
+							for(m=0;m< C;m++) {
+								sum+=Table[n][m];
+							}
+							if(sum==C){
+								count++;
+								int l, k;
+								for(k = n;k >=1;k--)
+									for(l=0;l<C;l++)
+										Table[k][l]=Table[k-1][l];
+								for(l=0;l<C;l++)
+									Table[k][l]=0;
+								timer-=decrease--;
+							}
+						}
+						final += 100*count;
+						Struct new_shape = FunctionCS(StructsArray[rand()%7]);
+						new_shape.col = rand()%(C-new_shape.width+1);
+						new_shape.row = 0;
+						FunctionDS(current);
+						current = new_shape;
+						if(!FunctionCP(current)){
+							GameOn = F;
+						}
+					}
+ * */
+void move_down(void) {
 	t_shape temp = copy_shape(current);
-	switch (c) {
-		case 's':
-			temp.row++;  //move down
-			if (is_valid_position(temp))
-				current.row++;
-			else {
-				int i, j;
-				for (i = 0; i < current.width; i++) {
-					for (j = 0; j < current.width; j++) {
-						if (current.array[i][j])
-							g_table[current.row + i][current.col + j] = current.array[i][j];
-					}
-				}
-				int n, m, sum, count = 0;
-				for (n = 0; n < ROW; n++) {
-					sum = 0;
-					for (m = 0; m < COLUMN; m++) {
-						sum += g_table[n][m];
-					}
-					if (sum == COLUMN) {
-						count++;
-						int l, k;
-						for (k = n; k >= 1; k--)
-							for (l = 0; l < COLUMN; l++)
-								g_table[k][l] = g_table[k - 1][l];
-						for (l = 0; l < COLUMN; l++)
-							g_table[k][l] = 0;
-						timer -= decrease--;
-					}
-				}
-				g_final += 100 * count;
-				t_shape new_shape = copy_shape(shapes[rand() % 7]);
-				new_shape.col = rand() % (COLUMN - new_shape.width + 1);
-				new_shape.row = 0;
-				destroy_shape(current);
-				current = new_shape;
-				if (!is_valid_position(current)) {
-					g_game_on = false;
-				}
+	temp.row++;
+	if (is_valid_position(temp)) {
+		current.row++;
+	} else {
+		int i, j;
+		for(i = 0; i < current.width ;i++){
+			for(j = 0; j < current.width ; j++){
+				if(current.array[i][j])
+					g_table[current.row+i][current.col+j] = current.array[i][j];
 			}
-			break;
-		case 'd':
-			temp.col++;
-			if (is_valid_position(temp))
-				current.col++;
-			break;
-		case 'a':
-			temp.col--;
-			if (is_valid_position(temp))
-				current.col--;
-			break;
-		case 'w':
-			rotate_shape(temp);
-			if (is_valid_position(temp))
-				rotate_shape(current);
-			break;
+		}
+		int n, m, sum, count=0;
+		for(n=0;n<ROW;n++){
+			sum = 0;
+			for(m=0;m< COLUMN;m++) {
+				sum+=g_table[n][m];
+			}
+			if(sum==COLUMN){
+				count++;
+				int l, k;
+				for(k = n;k >=1;k--)
+					for(l=0;l<COLUMN;l++)
+						g_table[k][l]=g_table[k-1][l];
+				for(l=0;l<COLUMN;l++)
+					g_table[k][l]=0;
+				timer-=decrease--;
+			}
+		}
+		g_final += 100*count;
+		t_shape new_shape = copy_shape(shapes[rand()%7]);
+		new_shape.col = rand()%(COLUMN-new_shape.width+1);
+		new_shape.row = 0;
+		destroy_shape(current);
+		current = new_shape;
+		if(!is_valid_position(current)) {
+			g_game_on = false;
+		}
 	}
 	destroy_shape(temp);
+}
+void move_right(void) {
+	t_shape temp = copy_shape(current);
+	temp.col++;
+	if (is_valid_position(current)) {
+		current.col++;
+	}
+	destroy_shape(temp);
+}
+void move_left(void) {
+	t_shape temp = copy_shape(current);
+	temp.col--;
+	if (is_valid_position(current)) {
+		current.col--;
+	}
+	destroy_shape(temp);
+}
+void rotate(void) {
+	t_shape temp = copy_shape(current);
+	rotate_shape(temp);
+	if (is_valid_position(temp)) {
+		rotate_shape(current);
+	}
+	destroy_shape(temp);
+}
+void update_terminal(int c) {
+	switch (c) {
+		case 's':
+			move_down();
+			break;
+		case 'd':
+			move_right();
+			break;
+		case 'a':
+			move_left();
+			break;
+		case 'w':
+			rotate();
+			break;
+	}
 	print_tetris();
 }
 
