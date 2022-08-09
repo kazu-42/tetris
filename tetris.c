@@ -16,19 +16,17 @@ typedef enum e_key{
 	TETROMINO_ROTATE = 'w',
 } t_key;
 
-
-char g_boad[ROW][COL] = {0};
-int g_score = 0;
-bool g_game_on = true;
-
-
 typedef struct {
 	char **array;
 	int width, row, col;
 } t_tetromino;
-t_tetromino current;
 
-const t_tetromino shapes[7] = {
+t_tetromino g_current;
+char g_boad[ROW][COL] = {0};
+int g_score = 0;
+bool g_game_on = true;
+
+const t_tetromino pieces[7] = {
 		{(char *[]) {(char[]) {0, 1, 1}, (char[]) {1, 1, 0}, (char[]) {0, 0, 0}},                                 3},
 		{(char *[]) {(char[]) {1, 1, 0}, (char[]) {0, 1, 1}, (char[]) {0, 0, 0}},                                 3},
 		{(char *[]) {(char[]) {0, 1, 0}, (char[]) {1, 1, 1}, (char[]) {0, 0, 0}},                                 3},
@@ -38,34 +36,34 @@ const t_tetromino shapes[7] = {
 		{(char *[]) {(char[]) {0, 0, 0, 0}, (char[]) {1, 1, 1, 1}, (char[]) {0, 0, 0, 0}, (char[]) {0, 0, 0, 0}}, 4}
 };
 
-t_tetromino copy_shape(t_tetromino shape) {
-	t_tetromino new_tetromino = shape;
-	char **copyshape = shape.array;
+t_tetromino copy_piece(t_tetromino piece) {
+	t_tetromino new_tetromino = piece;
+	char **copy_piece = piece.array;
 	new_tetromino.array = (char **) malloc(new_tetromino.width * sizeof(char *));
 	int i, j;
 	for (i = 0; i < new_tetromino.width; i++) {
 		new_tetromino.array[i] = (char *) malloc(new_tetromino.width * sizeof(char));
 		for (j = 0; j < new_tetromino.width; j++) {
-			new_tetromino.array[i][j] = copyshape[i][j];
+			new_tetromino.array[i][j] = copy_piece[i][j];
 		}
 	}
 	return new_tetromino;
 }
 
-void destroy_shape(t_tetromino shape) {
+void destroy_piece(t_tetromino piece) {
 	int i;
-	for (i = 0; i < shape.width; i++) {
-		free(shape.array[i]);
+	for (i = 0; i < piece.width; i++) {
+		free(piece.array[i]);
 	}
-	free(shape.array);
+	free(piece.array);
 }
 
-bool is_valid_position(t_tetromino shape) {
-	char **array = shape.array;
+bool is_valid_position(t_tetromino piece) {
+	char **array = piece.array;
 	int i, j;
-	for (i = 0; i < shape.width; i++) {
-		for (j = 0; j < shape.width; j++) {
-			int r = shape.row + i, c = shape.col + j;
+	for (i = 0; i < piece.width; i++) {
+		for (j = 0; j < piece.width; j++) {
+			int r = piece.row + i, c = piece.col + j;
 			if (!array[i][j])
 				continue;
 			if (c < 0 || c >= COL || r >= ROW) {
@@ -77,25 +75,25 @@ bool is_valid_position(t_tetromino shape) {
 	return true;
 }
 
-void rotate_shape(t_tetromino shape) { //rotate_clockwise
-	t_tetromino temp = copy_shape(shape);
+void rotate_piece(t_tetromino piece) { //rotate_clockwise
+	t_tetromino temp = copy_piece(piece);
 	int i, j, k, width;
-	width = shape.width;
+	width = piece.width;
 	for (i = 0; i < width; i++) {
 		for (j = 0, k = width - 1; j < width; j++, k--) {
-			shape.array[i][j] = temp.array[k][i];
+			piece.array[i][j] = temp.array[k][i];
 		}
 	}
-	destroy_shape(temp);
+	destroy_piece(temp);
 }
 
 void print_tetris() {
 	char buffer[ROW][COL] = {0};
 	int i, j;
-	for (i = 0; i < current.width; i++) {
-		for (j = 0; j < current.width; j++) {
-			if (current.array[i][j])
-				buffer[current.row + i][current.col + j] = current.array[i][j];
+	for (i = 0; i < g_current.width; i++) {
+		for (j = 0; j < g_current.width; j++) {
+			if (g_current.array[i][j])
+				buffer[g_current.row + i][g_current.col + j] = g_current.array[i][j];
 		}
 	}
 	clear();
@@ -119,22 +117,22 @@ int has_to_update() {
 }
 
 void spawn_random_tetromino() {
-	t_tetromino new_shape = copy_shape(shapes[rand()%7]);
-	new_shape.col = rand()%(COL-new_shape.width+1);
-	new_shape.row = 0;
-	destroy_shape(current);
-	current = new_shape;
-	if(!is_valid_position(current)) {
+	t_tetromino new_piece = copy_piece(pieces[rand()%7]);
+	new_piece.col = rand()%(COL - new_piece.width + 1);
+	new_piece.row = 0;
+	destroy_piece(g_current);
+	g_current = new_piece;
+	if(!is_valid_position(g_current)) {
 		g_game_on = false;
 	}
 }
 
 void copy_current_to_table(void) {
 	int i, j;
-	for(i = 0; i < current.width ;i++){
-		for(j = 0; j < current.width ; j++){
-			if(current.array[i][j])
-				g_boad[current.row+i][current.col+j] = current.array[i][j];
+	for(i = 0; i < g_current.width ;i++){
+		for(j = 0; j < g_current.width ; j++){
+			if(g_current.array[i][j])
+				g_boad[g_current.row+i][g_current.col+j] = g_current.array[i][j];
 		}
 	}
 }
@@ -167,43 +165,43 @@ void clear_lines(void) {
 }
 
 void move_down(void) {
-	t_tetromino temp = copy_shape(current);
+	t_tetromino temp = copy_piece(g_current);
 	temp.row++;
 	if (is_valid_position(temp)) {
-		current.row++;
+		g_current.row++;
 	} else {
 		copy_current_to_table();
 		clear_lines();
 		spawn_random_tetromino();
 	}
-	destroy_shape(temp);
+	destroy_piece(temp);
 }
 
 void move_right(void) {
-	t_tetromino temp = copy_shape(current);
+	t_tetromino temp = copy_piece(g_current);
 	temp.col++;
 	if (is_valid_position(temp)) {
-		current.col++;
+		g_current.col++;
 	}
-	destroy_shape(temp);
+	destroy_piece(temp);
 }
 
 void move_left(void) {
-	t_tetromino temp = copy_shape(current);
+	t_tetromino temp = copy_piece(g_current);
 	temp.col--;
 	if (is_valid_position(temp)) {
-		current.col--;
+		g_current.col--;
 	}
-	destroy_shape(temp);
+	destroy_piece(temp);
 }
 
 void rotate(void) { //TODO: rotate_clockwise
-	t_tetromino temp = copy_shape(current);
-	rotate_shape(temp);
+	t_tetromino temp = copy_piece(g_current);
+	rotate_piece(temp);
 	if (is_valid_position(temp)) {
-		rotate_shape(current);
+		rotate_piece(g_current);
 	}
-	destroy_shape(temp);
+	destroy_piece(temp);
 }
 
 void update_terminal(int input) {
@@ -255,7 +253,7 @@ int main() {
 			gettimeofday(&before_now, NULL);
 		}
 	}
-	destroy_shape(current);
+	destroy_piece(g_current);
 	endwin();
 	print_result();
 	return 0;
