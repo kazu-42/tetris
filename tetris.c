@@ -3,15 +3,14 @@
 #include <time.h>
 #include <sys/time.h>
 #include <ncurses.h>
+#include <stdbool.h>
 
 #define R 20
 #define C 15
-#define T 1
-#define F 0
 
 char Table[R][C] = {0};
 int final = 0;
-char GameOn = T;
+bool GameOn = true;
 suseconds_t timer = 400000;
 int decrease = 1000;
 
@@ -53,20 +52,20 @@ void FunctionDestroyShape(Shape shape) {
 	free(shape.array);
 }
 
-int FunctionCheckPosition(Shape shape) {
+bool FunctionCheckPosition(Shape shape) {
 	char **array = shape.array;
 	int i, j;
 	for (i = 0; i < shape.width; i++) {
 		for (j = 0; j < shape.width; j++) {
 			if ((shape.col + j < 0 || shape.col + j >= C || shape.row + i >= R)) {
 				if (array[i][j])
-					return F;
+					return false;
 
 			} else if (Table[shape.row + i][shape.col + j] && array[i][j])
-				return F;
+				return false;
 		}
 	}
-	return T;
+	return true;
 }
 
 void FunctionRotateShape(Shape shape) {
@@ -154,7 +153,7 @@ void update_terminal(int c) {
 				FunctionDestroyShape(current);
 				current = new_shape;
 				if (!FunctionCheckPosition(current)) {
-					GameOn = F;
+					GameOn = false;
 				}
 			}
 			break;
@@ -192,7 +191,7 @@ int main() {
 	FunctionDestroyShape(current);
 	current = new_shape;
 	if (!FunctionCheckPosition(current)) {
-		GameOn = F;
+		GameOn = false;
 	}
 	FunctionPrint();
 	while (GameOn) {
