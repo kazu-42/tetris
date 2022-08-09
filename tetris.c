@@ -18,10 +18,10 @@ int decrease = 1000;
 typedef struct {
 	char **array;
 	int width, row, col;
-} Struct;
-Struct current;
+} Shape;
+Shape current;
 
-const Struct StructsArray[7] = {
+const Shape StructsArray[7] = {
 		{(char *[]) {(char[]) {0, 1, 1}, (char[]) {1, 1, 0}, (char[]) {0, 0, 0}},                                 3},
 		{(char *[]) {(char[]) {1, 1, 0}, (char[]) {0, 1, 1}, (char[]) {0, 0, 0}},                                 3},
 		{(char *[]) {(char[]) {0, 1, 0}, (char[]) {1, 1, 1}, (char[]) {0, 0, 0}},                                 3},
@@ -31,8 +31,8 @@ const Struct StructsArray[7] = {
 		{(char *[]) {(char[]) {0, 0, 0, 0}, (char[]) {1, 1, 1, 1}, (char[]) {0, 0, 0, 0}, (char[]) {0, 0, 0, 0}}, 4}
 };
 
-Struct FunctionCS(Struct shape) {
-	Struct new_shape = shape;
+Shape FunctionCreateShape(Shape shape) {
+	Shape new_shape = shape;
 	char **copyshape = shape.array;
 	new_shape.array = (char **) malloc(new_shape.width * sizeof(char *));
 	int i, j;
@@ -45,7 +45,7 @@ Struct FunctionCS(Struct shape) {
 	return new_shape;
 }
 
-void FunctionDS(Struct shape) {
+void FunctionDestroyShape(Shape shape) {
 	int i;
 	for (i = 0; i < shape.width; i++) {
 		free(shape.array[i]);
@@ -53,7 +53,7 @@ void FunctionDS(Struct shape) {
 	free(shape.array);
 }
 
-int FunctionCP(Struct shape) {
+int FunctionCheckPosition(Shape shape) {
 	char **array = shape.array;
 	int i, j;
 	for (i = 0; i < shape.width; i++) {
@@ -69,8 +69,8 @@ int FunctionCP(Struct shape) {
 	return T;
 }
 
-void FunctionRS(Struct shape) {
-	Struct temp = FunctionCS(shape);
+void FunctionRotateShape(Shape shape) {
+	Shape temp = FunctionCreateShape(shape);
 	int i, j, k, width;
 	width = shape.width;
 	for (i = 0; i < width; i++) {
@@ -78,10 +78,10 @@ void FunctionRS(Struct shape) {
 			shape.array[i][j] = temp.array[k][i];
 		}
 	}
-	FunctionDS(temp);
+	FunctionDestroyShape(temp);
 }
 
-void FunctionPT() {
+void FunctionPrint() {
 	char Buffer[R][C] = {0};
 	int i, j;
 	for (i = 0; i < current.width; i++) {
@@ -116,11 +116,11 @@ void set_timeout(int time) {
 }
 
 void update_terminal(int c) {
-	Struct temp = FunctionCS(current);
+	Shape temp = FunctionCreateShape(current);
 	switch (c) {
 		case 's':
 			temp.row++;  //move down
-			if (FunctionCP(temp))
+			if (FunctionCheckPosition(temp))
 				current.row++;
 			else {
 				int i, j;
@@ -148,37 +148,36 @@ void update_terminal(int c) {
 					}
 				}
 				final += 100 * count;
-				Struct new_shape = FunctionCS(StructsArray[rand() % 7]);
+				Shape new_shape = FunctionCreateShape(StructsArray[rand() % 7]);
 				new_shape.col = rand() % (C - new_shape.width + 1);
 				new_shape.row = 0;
-				FunctionDS(current);
+				FunctionDestroyShape(current);
 				current = new_shape;
-				if (!FunctionCP(current)) {
+				if (!FunctionCheckPosition(current)) {
 					GameOn = F;
 				}
 			}
 			break;
 		case 'd':
 			temp.col++;
-			if (FunctionCP(temp))
+			if (FunctionCheckPosition(temp))
 				current.col++;
 			break;
 		case 'a':
 			temp.col--;
-			if (FunctionCP(temp))
+			if (FunctionCheckPosition(temp))
 				current.col--;
 			break;
 		case 'w':
-			FunctionRS(temp);
-			if (FunctionCP(temp))
-				FunctionRS(current);
+			FunctionRotateShape(temp);
+			if (FunctionCheckPosition(temp))
+				FunctionRotateShape(current);
 			break;
 	}
-	FunctionDS(temp);
-	FunctionPT();
+	FunctionDestroyShape(temp);
+	FunctionPrint();
 }
 
-Ï
 
 int main() {
 	srand(time(0));
@@ -187,15 +186,15 @@ int main() {
 	initscr();
 	gettimeofday(&before_now, NULL);
 	set_timeout(1);
-	Struct new_shape = FunctionCS(StructsArray[rand() % 7]);
+	Shape new_shape = FunctionCreateShape(StructsArray[rand() % 7]);
 	new_shape.col = rand() % (C - new_shape.width + 1);
 	new_shape.row = 0;
-	FunctionDS(current);
+	FunctionDestroyShape(current);
 	current = new_shape;
-	if (!FunctionCP(current)) {
+	if (!FunctionCheckPosition(current)) {
 		GameOn = F;
 	}
-	FunctionPT();
+	FunctionPrint();
 	while (GameOn) {
 		if ((c = getch()) != ERR) {
 			update_terminal(c);
@@ -206,7 +205,7 @@ int main() {
 			gettimeofday(&before_now, NULL);
 		}
 	}
-	FunctionDS(current);
+	FunctionDestroyShape(current);
 	endwin();
 	int i, j;
 	for (i = 0; i < R; i++) {
