@@ -8,6 +8,14 @@
 #define ROW 20
 #define COLUMN 15
 
+typedef enum e_key{
+	TETROMINO_DOWN = 's',
+	TETROMINO_LEFT = 'a',
+	TETROMINO_RIGHT = 'd',
+	TETROMINO_ROTATE = 'w',
+} t_key;
+
+
 char g_table[ROW][COLUMN] = {0};
 int g_final = 0;
 bool g_game_on = true;
@@ -183,53 +191,57 @@ void rotate(void) {
 	destroy_shape(temp);
 }
 
-void update_terminal(int c) {
+void update_terminal(int input) {
 	switch (c) {
-		case 's':
+		case TETROMINO_DOWN:
 			move_down();
 			break;
-		case 'd':
+		case TETROMINO_RIGHT:
 			move_right();
 			break;
-		case 'a':
+		case TETROMINO_LEFT:
 			move_left();
 			break;
-		case 'w':
+		case TETROMINO_ROTATE:
 			rotate();
 			break;
 	}
-	print_tetris();
 }
 
-int main() {
-	srand(time(0));
-	g_final = 0;
-	int c;
-	initscr();
-	gettimeofday(&before_now, NULL);
-	timeout(1);
-	create_random_shape();
-	print_tetris();
-	while (g_game_on) {
-		if ((c = getch()) != ERR) {
-			update_terminal(c);
-		}
-		gettimeofday(&now, NULL);
-		if (has_to_update()) {
-			update_terminal('s');
-			gettimeofday(&before_now, NULL);
-		}
-	}
-	destroy_shape(current);
-	endwin();
+void print_result(void) {
 	int i, j;
 	for (i = 0; i < ROW; i++) {
 		for (j = 0; j < COLUMN; j++) {
 			printf("%c ", g_table[i][j] ? '#' : '.');
 		}
-		printf("\n");
+		putchar('\n');
 	}
 	printf("\nGame over!\n");
 	printf("\nScore: %d\n", g_final);
+}
+
+int main() {
+	srand(time(NULL));
+	initscr();
+	gettimeofday(&before_now, NULL);
+	timeout(1);
+	create_random_shape();
+	print_tetris();
+	int key_input;
+	while (g_game_on) {
+		if ((key_input = getch()) != ERR) {
+			update_terminal(key_input);
+			print_tetris();
+		}
+		gettimeofday(&now, NULL);
+		if (has_to_update()) {
+			update_terminal(TETROMINO_DOWN);
+			print_tetris();
+			gettimeofday(&before_now, NULL);
+		}
+	}
+	destroy_shape(current);
+	endwin();
+	print_result();
 	return 0;
 }
