@@ -17,7 +17,7 @@ typedef enum e_key{
 } t_key;
 
 
-char g_table[ROW][COL] = {0};
+char g_boad[ROW][COL] = {0};
 int g_score = 0;
 bool g_game_on = true;
 
@@ -65,11 +65,12 @@ bool is_valid_position(t_tetromino shape) {
 	int i, j;
 	for (i = 0; i < shape.width; i++) {
 		for (j = 0; j < shape.width; j++) {
-			if ((shape.col + j < 0 || shape.col + j >= COL || shape.row + i >= ROW)) {
-				if (array[i][j])
-					return false;
-
-			} else if (g_table[shape.row + i][shape.col + j] && array[i][j])
+			int r = shape.row + i, c = shape.col + j;
+			if (!array[i][j])
+				continue;
+			if (c < 0 || c >= COL || r >= ROW) {
+				return false;
+			} else if (g_boad[r][c])
 				return false;
 		}
 	}
@@ -103,7 +104,7 @@ void print_tetris() {
 	printw("42 Tetris\n");
 	for (i = 0; i < ROW; i++) {
 		for (j = 0; j < COL; j++) {
-			printw("%c ", (g_table[i][j] + buffer[i][j]) ? '#' : '.');
+			printw("%c ", (g_boad[i][j] + buffer[i][j]) ? '#' : '.');
 		}
 		printw("\n");
 	}
@@ -133,14 +134,14 @@ void copy_current_to_table(void) {
 	for(i = 0; i < current.width ;i++){
 		for(j = 0; j < current.width ; j++){
 			if(current.array[i][j])
-				g_table[current.row+i][current.col+j] = current.array[i][j];
+				g_boad[current.row+i][current.col+j] = current.array[i][j];
 		}
 	}
 }
 
 bool is_completely_filled(int row) {
 	for(int i = 0; i < COL; i++){
-		if(!g_table[row][i])
+		if(!g_boad[row][i])
 			return false;
 	}
 	return true;
@@ -151,9 +152,9 @@ void clear_line(int row) { //TODO: var i, j -> なんかいい感じの変数名
 
 	for(j = row;j >=1;j--)
 		for(i=0;i<COL;i++)
-			g_table[j][i]=g_table[j-1][i];
+			g_boad[j][i]=g_boad[j-1][i];
 	for(i=0;i<COL;i++)
-		g_table[j][i]=0;
+		g_boad[j][i]=0;
 }
 
 void clear_lines(void) {
@@ -226,7 +227,7 @@ void print_result(void) {
 	int i, j;
 	for (i = 0; i < ROW; i++) {
 		for (j = 0; j < COL; j++) {
-			printf("%c ", g_table[i][j] ? '#' : '.');
+			printf("%c ", g_boad[i][j] ? '#' : '.');
 		}
 		putchar('\n');
 	}
