@@ -109,6 +109,17 @@ int has_to_update() {
 			((suseconds_t) before_now.tv_sec * 1000000 + before_now.tv_usec)) > timer;
 }
 
+void create_random_shape() {
+	t_shape new_shape = copy_shape(shapes[rand()%7]);
+	new_shape.col = rand()%(COLUMN-new_shape.width+1);
+	new_shape.row = 0;
+	destroy_shape(current);
+	current = new_shape;
+	if(!is_valid_position(current)) {
+		g_game_on = false;
+	}
+}
+
 void move_down(void) {
 	t_shape temp = copy_shape(current);
 	temp.row++;
@@ -140,33 +151,29 @@ void move_down(void) {
 			}
 		}
 		g_final += 100*count;
-		t_shape new_shape = copy_shape(shapes[rand()%7]);
-		new_shape.col = rand()%(COLUMN-new_shape.width+1);
-		new_shape.row = 0;
-		destroy_shape(current);
-		current = new_shape;
-		if(!is_valid_position(current)) {
-			g_game_on = false;
-		}
+		create_random_shape();
 	}
 	destroy_shape(temp);
 }
+
 void move_right(void) {
 	t_shape temp = copy_shape(current);
 	temp.col++;
-	if (is_valid_position(current)) {
+	if (is_valid_position(temp)) {
 		current.col++;
 	}
 	destroy_shape(temp);
 }
+
 void move_left(void) {
 	t_shape temp = copy_shape(current);
 	temp.col--;
-	if (is_valid_position(current)) {
+	if (is_valid_position(temp)) {
 		current.col--;
 	}
 	destroy_shape(temp);
 }
+
 void rotate(void) {
 	t_shape temp = copy_shape(current);
 	rotate_shape(temp);
@@ -175,6 +182,7 @@ void rotate(void) {
 	}
 	destroy_shape(temp);
 }
+
 void update_terminal(int c) {
 	switch (c) {
 		case 's':
@@ -200,14 +208,7 @@ int main() {
 	initscr();
 	gettimeofday(&before_now, NULL);
 	timeout(1);
-	t_shape new_shape = copy_shape(shapes[rand() % 7]);
-	new_shape.col = rand() % (COLUMN - new_shape.width + 1);
-	new_shape.row = 0;
-	destroy_shape(current);
-	current = new_shape;
-	if (!is_valid_position(current)) {
-		g_game_on = false;
-	}
+	create_random_shape();
 	print_tetris();
 	while (g_game_on) {
 		if ((c = getch()) != ERR) {
