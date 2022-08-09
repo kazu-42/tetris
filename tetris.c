@@ -7,6 +7,7 @@
 
 #define ROW 20
 #define COL 15
+#define FRAME_USEC 400000
 
 typedef enum e_key{
 	TETROMINO_DOWN = 's',
@@ -19,8 +20,7 @@ typedef enum e_key{
 char g_table[ROW][COL] = {0};
 int g_score = 0;
 bool g_game_on = true;
-suseconds_t timer = 400000;
-int decrease = 1000;
+
 
 typedef struct {
 	char **array;
@@ -114,7 +114,7 @@ struct timeval before_now, now;
 
 int has_to_update() {
 	return ((suseconds_t)(now.tv_sec * 1000000 + now.tv_usec) -
-			((suseconds_t) before_now.tv_sec * 1000000 + before_now.tv_usec)) > timer;
+			((suseconds_t) before_now.tv_sec * 1000000 + before_now.tv_usec)) > FRAME_USEC;
 }
 
 void create_random_shape() {
@@ -153,7 +153,6 @@ void clear_lines(void) {
 					g_table[k][l]=g_table[k-1][l];
 			for(l=0;l<COL;l++)
 				g_table[k][l]=0;
-			timer-=decrease--;
 		}
 	}
 	g_score += 100*count;
