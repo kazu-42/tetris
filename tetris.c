@@ -218,6 +218,8 @@ void update_terminal(int input) {
 		case TETROMINO_ROTATE:
 			rotate();
 			break;
+        default:
+            break;
 	}
 }
 
