@@ -66,9 +66,9 @@ bool is_valid_position(t_tetromino piece) {
 			int r = piece.row + i, c = piece.col + j;
 			if (!array[i][j])
 				continue;
-			if (c < 0 || c >= COL || r >= ROW) {
+			if (c < 0 || c >= COL || r >= ROW )
 				return false;
-			} else if (g_boad[r][c])
+            if (g_boad[r][c])
 				return false;
 		}
 	}
