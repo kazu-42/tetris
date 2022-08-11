@@ -1,8 +1,9 @@
 NAME	=	tetris
 CFLAGS	=	-Wall -Wextra -Werror
+LIBRARY	=	-lncurses
 
 $(NAME): tetris.c
-	gcc tetris.c -lncurses -o tetris $(CFLAGS)
+	gcc tetris.c $(LIBRARY) -o $(NAME) $(CFLAGS)
 
 .PHONY: all
 all: $(NAME)
@@ -17,3 +18,7 @@ fclean: clean
 
 .PHONY: re
 re: fclean all
+
+.PHONY: debug
+debug: fclean
+	gcc tetris.c $(LIBRARY) -o $(NAME) $(CFLAGS) -Weverything
