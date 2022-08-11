@@ -84,13 +84,13 @@ bool is_valid_position(t_tetromino piece, t_board board) {
 	return true;
 }
 
-void rotate_piece(t_tetromino piece) { //rotate_clockwise
-	t_tetromino temp = copy_piece(piece);
+void rotate_piece(t_tetromino *piece) { //rotate_clockwise
+	t_tetromino temp = copy_piece(*piece);
 	int i, j, k, width;
-	width = piece.width;
+	width = piece->width;
 	for (i = 0; i < width; i++) {
 		for (j = 0, k = width - 1; j < width; j++, k--) {
-			piece.array[i][j] = temp.array[k][i];
+			piece->array[i][j] = temp.array[k][i];
 		}
 	}
 	destroy_piece(temp);
@@ -173,20 +173,32 @@ void clear_lines(int *score) {
 	}
 }
 
+void move_down(t_tetromino *piece) {
+    piece->row++;
+}
+
+void move_right(t_tetromino *piece){
+    piece->col++;
+}
+
+void move_left(t_tetromino *piece){
+    piece->col--;
+}
+
 bool	is_executable(t_key op, t_tetromino piece, t_board board) {
 	t_tetromino temp = copy_piece(piece);
 	switch (op) {
 		case TETROMINO_DOWN:
-			temp.row++;
+            move_down(&temp);
 			break;
 		case TETROMINO_RIGHT:
-			temp.col++;
+            move_right(&temp);
 			break;
 		case TETROMINO_LEFT:
-			temp.col--;
+			move_left(&temp);
 			break;
 		case TETROMINO_ROTATE:
-			rotate_piece(temp);
+			rotate_piece(&temp);
 			break;
         default:
 			return false;
@@ -196,64 +208,33 @@ bool	is_executable(t_key op, t_tetromino piece, t_board board) {
 	return res;
 }
 
-void	execute(t_key op, t_tetromino *piece, t_board *board) {
-
-}
-
-void move_down(int *score) {
-	if (is_executable(TETROMINO_DOWN, g_current, g_board)) {
-		g_current.row++;
-	} else {
-		copy_current_to_table();
-		clear_lines(score);
-		spawn_random_tetromino();
-	}
-}
-
-void move_right(void) {
-	t_tetromino temp = copy_piece(g_current);
-	temp.col++;
-	if (is_valid_position(temp, g_board)) {
-		g_current.col++;
-	}
-	destroy_piece(temp);
-}
-
-void move_left(void) {
-	t_tetromino temp = copy_piece(g_current);
-	temp.col--;
-	if (is_valid_position(temp, g_board)) {
-		g_current.col--;
-	}
-	destroy_piece(temp);
-}
-
-void rotate(void) { //TODO: rotate_clockwise
-	t_tetromino temp = copy_piece(g_current);
-	rotate_piece(temp);
-	if (is_valid_position(temp, g_board)) {
-		rotate_piece(g_current);
-	}
-	destroy_piece(temp);
-}
-
-void update_terminal(int input, int *score) {
-	switch (input) {
-		case TETROMINO_DOWN:
-			move_down(score);
-			break;
-		case TETROMINO_RIGHT:
-			move_right();
-			break;
-		case TETROMINO_LEFT:
-			move_left();
-			break;
-		case TETROMINO_ROTATE:
-			rotate();
-			break;
-        default:
+void	execute(t_key op, t_tetromino *piece) {
+    switch (op) {
+        case TETROMINO_DOWN:
+            move_down(piece);
             break;
-	}
+        case TETROMINO_RIGHT:
+            move_right(piece);
+            break;
+        case TETROMINO_LEFT:
+            move_left(piece);
+            break;
+        case TETROMINO_ROTATE:
+            rotate_piece(piece);
+            break;
+        default:
+            return;
+    }
+}
+
+void update_terminal(t_key op, int *score) {
+    if (is_executable(op, g_current, g_board)) {
+        execute(op, &g_current);
+    } else if (op == TETROMINO_DOWN) {
+        copy_current_to_table();
+        clear_lines(score);
+        spawn_random_tetromino();
+    }
 }
 
 void print_result(int score) {
