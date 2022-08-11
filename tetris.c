@@ -25,13 +25,13 @@ typedef bool t_board[ROW][COL];
 
 typedef struct {
 	t_tetromino	current;
-	bool		boad[ROW][COL];
+	t_board		board;
 	int			score;
 	bool		game_on;
 } t_context;
 
 //t_tetromino current;
-t_board g_board = {0};
+//t_board board = {0};
 //int g_score = 0;
 //bool g_game_on = true;
 
@@ -96,7 +96,7 @@ void rotate_piece(t_tetromino *piece) { //rotate_clockwise
 	destroy_piece(temp);
 }
 
-void print_tetris(t_tetromino current, int score) {
+void print_tetris(t_board board, t_tetromino current, int score) {
 	char buffer[ROW][COL] = {0};
 	int i, j;
 	for (i = 0; i < current.width; i++) {
@@ -111,7 +111,7 @@ void print_tetris(t_tetromino current, int score) {
 	printw("42 Tetris\n");
 	for (i = 0; i < ROW; i++) {
 		for (j = 0; j < COL; j++) {
-			printw("%c ", (g_board[i][j] + buffer[i][j]) ? '#' : '.');
+			printw("%c ", (board[i][j] + buffer[i][j]) ? '#' : '.');
 		}
 		printw("\n");
 	}
@@ -125,50 +125,46 @@ int has_to_update() {
 			((suseconds_t) before_now.tv_sec * 1000000 + before_now.tv_usec)) > FRAME_INTERVAL_USEC;
 }
 
-void spawn_random_tetromino(t_tetromino *current, bool *game_on) {
+void spawn_random_tetromino(t_tetromino *current) {
 	t_tetromino new_piece = copy_piece(pieces[rand()%7]);
 	new_piece.col = rand()%(COL - new_piece.width + 1);
 	new_piece.row = 0;
 	destroy_piece(*current);
 	*current = new_piece;
-	// TODO: remove this
-	if(!is_valid_position(*current, g_board)) {
-		*game_on = false;
-	}
 }
 
-void copy_current_to_table(t_tetromino current) {
+void copy_current_to_table(const t_tetromino current, t_board board) {
 	int i, j;
 	for(i = 0; i < current.width ;i++){
 		for(j = 0; j < current.width ; j++){
 			if(current.array[i][j])
-				g_board[current.row+i][current.col+j] = current.array[i][j];
+				board[current.row+i][current.col+j] = current.array[i][j];
 		}
 	}
 }
 
-bool is_completely_filled(int row) {
+bool is_completely_filled(const int row, const t_board board) {
 	for(int i = 0; i < COL; i++){
-		if(!g_board[row][i])
+		if(!board[row][i])
 			return false;
 	}
 	return true;
 }
 
-void clear_line(int row) { //TODO: var i, j -> なんかいい感じの変数名に
+void clear_line(int row, t_board board) { //TODO: var i, j -> なんかいい感じの変数名に
 	int i, j;
 
 	for(j = row;j >=1;j--)
 		for(i=0;i<COL;i++)
-			g_board[j][i]=g_board[j-1][i];
+			board[j][i]=board[j-1][i];
 	for(i=0;i<COL;i++)
-		g_board[j][i]=0;
+		board[j][i]=0;
 }
 
-void clear_lines(int *score) {
+void clear_lines(int *score, t_board board) {
 	for(int n=0;n<ROW;n++){
-		if(is_completely_filled(n)){
-			clear_line(n);
+		if(is_completely_filled(n, board)){
+			clear_line(n, board);
 			*score += 100;
 		}
 	}
@@ -229,20 +225,23 @@ void	execute(t_key op, t_tetromino *piece) {
 }
 
 void update_terminal(t_key op,t_context *ctx) {
-    if (is_executable(op, ctx->current, g_board)) {
+    if (is_executable(op, ctx->current, ctx->board)) {
         execute(op, &ctx->current);
     } else if (op == TETROMINO_DOWN) {
-        copy_current_to_table(ctx->current);
-        clear_lines(&ctx->score);
-        spawn_random_tetromino(&ctx->current, &ctx->game_on);
+        copy_current_to_table(ctx->current, ctx->board);
+        clear_lines(&ctx->score, ctx->board);
+        spawn_random_tetromino(&ctx->current);
+		if(!is_valid_position(ctx->current, ctx->board)) {
+			ctx->game_on = false;
+		}
     }
 }
 
-void print_result(int score) {
+void print_result(int score, const t_board board) {
 	int i, j;
 	for (i = 0; i < ROW; i++) {
 		for (j = 0; j < COL; j++) {
-			printf("%c ", g_board[i][j] ? '#' : '.');
+			printf("%c ", board[i][j] ? '#' : '.');
 		}
 		putchar('\n');
 	}
@@ -251,9 +250,12 @@ void print_result(int score) {
 }
 
 void	init_context(t_context *ctx) {
-	ctx->score = 0;
-    ctx->game_on = true;
-	ctx->current = (t_tetromino){0};
+	*ctx = (t_context) {
+		.score = 0,
+		.game_on = true,
+		.current = {0},
+		.board = {0}
+	};
 }
 
 void	init_game(t_context *ctx) {
@@ -262,8 +264,11 @@ void	init_game(t_context *ctx) {
 	initscr();
 	gettimeofday(&before_now, NULL);
 	timeout(1);
-	spawn_random_tetromino(&ctx->current, &ctx->game_on);
-	print_tetris(ctx->current, ctx->score);
+	spawn_random_tetromino(&ctx->current);
+	if(!is_valid_position(ctx->current, ctx->board)) {
+		ctx->game_on = false;
+	}
+	print_tetris(ctx->board, ctx->current, ctx->score);
 }
 
 void	loop_game(t_context *ctx) {
@@ -272,12 +277,12 @@ void	loop_game(t_context *ctx) {
 	while (ctx->game_on) {
 		if ((key_input = getch()) != ERR) {
 			update_terminal(key_input, ctx);
-			print_tetris(ctx->current, ctx->score);
+			print_tetris(ctx->board, ctx->current, ctx->score);
 		}
 		gettimeofday(&now, NULL);
 		if (has_to_update()) {
 			update_terminal(TETROMINO_DOWN, ctx);
-			print_tetris(ctx->current, ctx->score);
+			print_tetris(ctx->board, ctx->current, ctx->score);
 			gettimeofday(&before_now, NULL);
 		}
 	}
@@ -286,7 +291,7 @@ void	loop_game(t_context *ctx) {
 void	destroy_game(t_context *ctx) {
 	destroy_piece(ctx->current);
 	endwin();
-	print_result(ctx->score);
+	print_result(ctx->score, ctx->board);
 }
 
 int main() {
