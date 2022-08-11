@@ -33,7 +33,7 @@ typedef struct {
 t_tetromino g_current;
 t_board g_board = {0};
 //int g_score = 0;
-bool g_game_on = true;
+//bool g_game_on = true;
 
 const t_tetromino pieces[7] = {
 		{(char *[]) {(char[]) {0, 1, 1}, (char[]) {1, 1, 0}, (char[]) {0, 0, 0}},                                 3},
@@ -125,14 +125,14 @@ int has_to_update() {
 			((suseconds_t) before_now.tv_sec * 1000000 + before_now.tv_usec)) > FRAME_INTERVAL_USEC;
 }
 
-void spawn_random_tetromino() {
+void spawn_random_tetromino(bool *game_on) {
 	t_tetromino new_piece = copy_piece(pieces[rand()%7]);
 	new_piece.col = rand()%(COL - new_piece.width + 1);
 	new_piece.row = 0;
 	destroy_piece(g_current);
 	g_current = new_piece;
 	if(!is_valid_position(g_current, g_board)) {
-		g_game_on = false;
+		*game_on = false;
 	}
 }
 
@@ -227,13 +227,13 @@ void	execute(t_key op, t_tetromino *piece) {
     }
 }
 
-void update_terminal(t_key op, int *score) {
+void update_terminal(t_key op,t_context *ctx) {
     if (is_executable(op, g_current, g_board)) {
         execute(op, &g_current);
     } else if (op == TETROMINO_DOWN) {
         copy_current_to_table();
-        clear_lines(score);
-        spawn_random_tetromino();
+        clear_lines(&ctx->score);
+        spawn_random_tetromino(&ctx->game_on);
     }
 }
 
@@ -251,6 +251,7 @@ void print_result(int score) {
 
 void	init_context(t_context *ctx) {
 	ctx->score = 0;
+    ctx->game_on = true;
 }
 
 void	init_game(t_context *ctx) {
@@ -259,21 +260,21 @@ void	init_game(t_context *ctx) {
 	initscr();
 	gettimeofday(&before_now, NULL);
 	timeout(1);
-	spawn_random_tetromino();
+	spawn_random_tetromino(&ctx->game_on);
 	print_tetris(ctx->score);
 }
 
 void	loop_game(t_context *ctx) {
 	int	key_input;
 
-	while (g_game_on) {
+	while (ctx->game_on) {
 		if ((key_input = getch()) != ERR) {
-			update_terminal(key_input, &ctx->score);
+			update_terminal(key_input, ctx);
 			print_tetris(ctx->score);
 		}
 		gettimeofday(&now, NULL);
 		if (has_to_update()) {
-			update_terminal(TETROMINO_DOWN, &ctx->score);
+			update_terminal(TETROMINO_DOWN, ctx);
 			print_tetris(ctx->score);
 			gettimeofday(&before_now, NULL);
 		}
