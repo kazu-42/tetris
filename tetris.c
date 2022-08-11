@@ -7,11 +7,12 @@
 
 #define ROW 20
 #define COL 15
-#define DEFAULT_GRAVITY 0.1
 #define ONE_SECOND_IN_USEC 1000000
 #define FRAME_PER_SECOND 10
 #define NUM_TETRIMINOS 7
 #define SCORE_PER_LINE 100
+#define DEFAULT_GRAVITY 0.1
+#define GRAVITY_INCREASE_PER_LINE 0.01
 #define CURSES_READ_INTERVAL_MILLISEC 1
 
 typedef enum {
@@ -111,33 +112,43 @@ static const t_tetromino tetrominoes[NUM_TETRIMINOS] = {
 		.col = 0
 	 }};
 
+// move.c
 t_move to_move(int ch);
+void apply_move(t_move move, t_tetromino *piece);
+bool try_move(t_move move, t_tetromino *piece, const t_board board);
+static void move_down(t_tetromino *piece);
+static void move_right(t_tetromino *piece);
+static void move_left(t_tetromino *piece);
+static void rotate_tetromino(t_tetromino *piece);
+static bool has_room_to_move(t_move move, const t_tetromino piece, const t_board board);
+
+// tetromino.c
+t_tetromino generate_random_tetromino(void);
 t_tetromino duplicate_tetromino(const t_tetromino piece);
 void destroy_tetromino(t_tetromino piece);
-
 bool is_valid_position(const t_tetromino piece, const t_board board);
-void print_tetris(const t_board board, const t_tetromino current, int score);
-int has_to_fall_by_gravity(t_timeval updated_at, double gravity);
-t_tetromino generate_random_tetromino(void);
-void lock_tetromino_to_board(const t_tetromino piece, t_board board);
-bool is_line_filled(int row, const t_board board);
-void clear_line(int row, t_board board);
-int	clear_filled_lines(t_board board);
-void move_down(t_tetromino *piece);
-void move_right(t_tetromino *piece);
-void move_left(t_tetromino *piece);
-void rotate_tetromino(t_tetromino *piece);
-static void apply_move(t_move move, t_tetromino *piece);
-static bool has_room_to_move(t_move move, const t_tetromino piece, const t_board board);
-bool try_move(t_move move, t_context *ctx);
-void apply_gravity(t_context *ctx);
-void print_result(int score, const t_board board);
-void init_context(t_context *ctx);
-void init_game(t_context *ctx);
-void loop_game(t_context *ctx);
-void destroy_game(t_context *ctx);
 
-// ---------------------------------
+// gravity.c
+void apply_gravity(t_context *ctx);
+int is_time_to_fall(t_timeval updated_at, double gravity);
+static void lock_tetromino_to_board(const t_tetromino piece, t_board board);
+static bool is_line_filled(int row, const t_board board);
+static void clear_line(int row, t_board board);
+static int	clear_filled_lines(t_board board);
+static double next_gravity(double gravity, int lines_cleared);
+
+// print.c
+static void printw_current_screen(const t_board board, const t_tetromino current, int score);
+static void print_result(int score, const t_board board);
+
+// main.c
+void init_seed(void);
+void init_curses(void);
+void init_context(t_context *ctx);
+void destroy_context(t_context *ctx);
+void destroy_curses(void);
+void run_tetris(t_context *ctx);
+
 t_move to_move(int ch) {
     printw("%d\n", ch);
     switch (ch) {
@@ -205,7 +216,7 @@ void rotate_tetromino(t_tetromino *piece) {
     destroy_tetromino(temp);
 }
 
-void print_tetris(const t_board board, const t_tetromino current, int score) {
+void printw_current_screen(const t_board board, const t_tetromino current, int score) {
     char buffer[ROW][COL] = {0};
     for (int i = 0; i < current.length; i++) {
         for (int j = 0; j < current.length; j++) {
@@ -226,9 +237,10 @@ void print_tetris(const t_board board, const t_tetromino current, int score) {
     printw("\nScore: %d\n", score);
 }
 
-// The greater gravity is, the faster falling is.
+// When certain period of time is passed since last updates, piece falls by gravity.
+// The greater the gravity is, the faster the piece falls.
 // Gravity is expressed in unit G, where 1G = 1 cell per frame, and 0.1G = 1 cell per 10 frames.
-int has_to_fall_by_gravity(t_timeval updated_at, double gravity) {
+int is_time_to_fall(t_timeval updated_at, double gravity) {
     t_timeval now;
 	time_t elapsed_usec;
 
@@ -298,7 +310,7 @@ void move_left(t_tetromino *piece) {
     piece->col--;
 }
 
-static void apply_move(t_move move, t_tetromino *piece) {
+void apply_move(t_move move, t_tetromino *piece) {
     switch (move) {
         case MOVE_DOWN:
             move_down(piece);
@@ -329,25 +341,29 @@ static bool has_room_to_move(t_move move, const t_tetromino piece, const t_board
 }
 
 // Returns true if the board has room and move is applied
-bool try_move(t_move move, t_context *ctx) {
-    if (has_room_to_move(move, ctx->current, ctx->board)) {
-        apply_move(move, &ctx->current);
+bool try_move(t_move move, t_tetromino *piece, const t_board board) {
+    if (has_room_to_move(move, *piece, board)) {
+        apply_move(move, piece);
 		return true;
     } else {
 		return false;
 	}
 }
 
+static double next_gravity(double gravity, int lines_cleared) {
+	return gravity + GRAVITY_INCREASE_PER_LINE * lines_cleared;
+}
+
 void apply_gravity(t_context *ctx) {
 	bool is_tetoromino_landed;
 	int	lines_cleared;
 
-	is_tetoromino_landed = !try_move(MOVE_DOWN, ctx);
+	is_tetoromino_landed = !try_move(MOVE_DOWN, &ctx->current, ctx->board);
     if (is_tetoromino_landed) {
         lock_tetromino_to_board(ctx->current, ctx->board);
 		lines_cleared = clear_filled_lines(ctx->board);
         ctx->score += SCORE_PER_LINE * lines_cleared;
-		ctx->gravity += (double)lines_cleared * 0.01;
+		ctx->gravity = next_gravity(ctx->gravity, lines_cleared);
 		destroy_tetromino(ctx->current);
         ctx->current = generate_random_tetromino();
         if (!is_valid_position(ctx->current, ctx->board)) {
@@ -367,6 +383,7 @@ void print_result(int score, const t_board board) {
     printf("\nScore: %d\n", score);
 }
 
+// Before calling this function, Randomness seed should be set by srand().
 void init_context(t_context *ctx) {
     *ctx = (t_context){
             .score = 0,
@@ -378,48 +395,62 @@ void init_context(t_context *ctx) {
     gettimeofday(&ctx->updated_at, NULL);
 }
 
-void init_game(t_context *ctx) {
+// Use current timestamp as randomness seed
+void init_seed(void) {
 	unsigned int seed;
 
-	// Use current timestamp as randomness seed
 	seed = (unsigned int)time(NULL);
-    init_context(ctx);
     srand(seed);
-    initscr();
-    timeout(CURSES_READ_INTERVAL_MILLISEC);
-    print_tetris(ctx->board, ctx->current, ctx->score);
 }
 
-void loop_game(t_context *ctx) {
+// init screen and configure blocking read interval
+void init_curses(void) {
+    initscr();
+    timeout(CURSES_READ_INTERVAL_MILLISEC);
+}
+
+void run_tetris(t_context *ctx) {
     int key_input;
 	t_move move;
 
+	// print initial screen to window
+    printw_current_screen(ctx->board, ctx->current, ctx->score);
+
+	// loop while game is not over
     while (ctx->game_on) {
 		key_input = getch();
         if (key_input != ERR) {
 			move = to_move(key_input);
-            try_move(move, ctx);
-            print_tetris(ctx->board, ctx->current, ctx->score);
+            try_move(move, &ctx->current, ctx->board);
+            printw_current_screen(ctx->board, ctx->current, ctx->score);
         }
-        if (has_to_fall_by_gravity(ctx->updated_at, ctx->gravity)) {
+        if (is_time_to_fall(ctx->updated_at, ctx->gravity)) {
 			apply_gravity(ctx);
-            print_tetris(ctx->board, ctx->current, ctx->score);
+            printw_current_screen(ctx->board, ctx->current, ctx->score);
 			gettimeofday(&ctx->updated_at, NULL);
         }
     }
+
+	// print the final result to terminal
+    print_result(ctx->score, ctx->board);
 }
 
-void destroy_game(t_context *ctx) {
+void destroy_context(t_context *ctx) {
     destroy_tetromino(ctx->current);
+}
+
+void destroy_curses(void) {
     endwin();
-    print_result(ctx->score, ctx->board);
 }
 
 int main(void) {
     t_context ctx;
 
-    init_game(&ctx);
-    loop_game(&ctx);
-    destroy_game(&ctx);
+	init_seed();
+	init_curses();
+    init_context(&ctx);
+    run_tetris(&ctx);
+    destroy_context(&ctx);
+	destroy_curses();
     return 0;
 }
