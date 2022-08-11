@@ -30,11 +30,6 @@ typedef struct {
 	bool		game_on;
 } t_context;
 
-//t_tetromino current;
-//t_board board = {0};
-//int g_score = 0;
-//bool g_game_on = true;
-
 const t_tetromino pieces[7] = {
 		{(char *[]) {(char[]) {0, 1, 1}, (char[]) {1, 1, 0}, (char[]) {0, 0, 0}},                                 3},
 		{(char *[]) {(char[]) {1, 1, 0}, (char[]) {0, 1, 1}, (char[]) {0, 0, 0}},                                 3},
@@ -45,7 +40,7 @@ const t_tetromino pieces[7] = {
 		{(char *[]) {(char[]) {0, 0, 0, 0}, (char[]) {1, 1, 1, 1}, (char[]) {0, 0, 0, 0}, (char[]) {0, 0, 0, 0}}, 4}
 };
 
-t_tetromino copy_piece(t_tetromino piece) {
+t_tetromino copy_piece(const t_tetromino piece) {
 	t_tetromino new_tetromino = piece;
 	char **copy_piece = piece.array;
 	new_tetromino.array = (char **) malloc(new_tetromino.width * sizeof(char *));
@@ -67,7 +62,7 @@ void destroy_piece(t_tetromino piece) {
 	free(piece.array);
 }
 
-bool is_valid_position(t_tetromino piece, t_board board) {
+bool is_valid_position(const t_tetromino piece, const t_board board) {
 	char **array = piece.array;
 	int i, j;
 	for (i = 0; i < piece.width; i++) {
@@ -96,7 +91,7 @@ void rotate_piece(t_tetromino *piece) { //rotate_clockwise
 	destroy_piece(temp);
 }
 
-void print_tetris(t_board board, t_tetromino current, int score) {
+void print_tetris(const t_board board, const t_tetromino current, int score) {
 	char buffer[ROW][COL] = {0};
 	int i, j;
 	for (i = 0; i < current.width; i++) {
@@ -133,7 +128,7 @@ void spawn_random_tetromino(t_tetromino *current) {
 	*current = new_piece;
 }
 
-void copy_current_to_table(const t_tetromino current, t_board board) {
+void copy_current_to_board(const t_tetromino current, t_board board) {
 	int i, j;
 	for(i = 0; i < current.width ;i++){
 		for(j = 0; j < current.width ; j++){
@@ -143,7 +138,7 @@ void copy_current_to_table(const t_tetromino current, t_board board) {
 	}
 }
 
-bool is_completely_filled(const int row, const t_board board) {
+bool is_completely_filled(int row, const t_board board) {
 	for(int i = 0; i < COL; i++){
 		if(!board[row][i])
 			return false;
@@ -182,7 +177,7 @@ void move_left(t_tetromino *piece){
     piece->col--;
 }
 
-bool	is_executable(t_key op, t_tetromino piece, t_board board) {
+bool	is_executable(t_key op, const t_tetromino piece, const t_board board) {
 	t_tetromino temp = copy_piece(piece);
 	switch (op) {
 		case TETROMINO_DOWN:
@@ -224,11 +219,11 @@ void	execute(t_key op, t_tetromino *piece) {
     }
 }
 
-void update_terminal(t_key op,t_context *ctx) {
+void update_terminal(t_key op, t_context *ctx) {
     if (is_executable(op, ctx->current, ctx->board)) {
         execute(op, &ctx->current);
     } else if (op == TETROMINO_DOWN) {
-        copy_current_to_table(ctx->current, ctx->board);
+        copy_current_to_board(ctx->current, ctx->board);
         clear_lines(&ctx->score, ctx->board);
         spawn_random_tetromino(&ctx->current);
 		if(!is_valid_position(ctx->current, ctx->board)) {
