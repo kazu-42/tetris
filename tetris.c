@@ -19,8 +19,6 @@ typedef enum {
     MOVE_UNKNOWN,
 } t_move;
 
-
-
 typedef struct {
     char **array;
     int length, row, col;
@@ -38,41 +36,48 @@ typedef struct {
 } t_context;
 
 const t_tetromino tetrominoes[NUM_TETRIMINOS] = {
-        {(char *[]){
-                 (char[]){0, 1, 1},
-                 (char[]){1, 1, 0},
-                 (char[]){0, 0, 0}},
-         3},
-        {(char *[]){
-                 (char[]){1, 1, 0},
-                 (char[]){0, 1, 1},
-                 (char[]){0, 0, 0}},
-         3},
-        {(char *[]){
-                 (char[]){0, 1, 0},
-                 (char[]){1, 1, 1},
-                 (char[]){0, 0, 0}},
-         3},
-        {(char *[]){
-                 (char[]){0, 0, 1},
-                 (char[]){1, 1, 1},
-                 (char[]){0, 0, 0}},
-         3},
-        {(char *[]){
-                 (char[]){1, 0, 0},
-                 (char[]){1, 1, 1},
-                 (char[]){0, 0, 0}},
-         3},
-        {(char *[]){
-                 (char[]){1, 1},
-                 (char[]){1, 1}},
-         2},
-        {(char *[]){
-                 (char[]){0, 0, 0, 0},
-                 (char[]){1, 1, 1, 1},
-                 (char[]){0, 0, 0, 0},
-                 (char[]){0, 0, 0, 0}},
-         4}};
+	// shape S
+	{(char *[]){
+			 (char[]){0, 1, 1},
+			 (char[]){1, 1, 0},
+			 (char[]){0, 0, 0}},
+	 3},
+	// shape Z
+	{(char *[]){
+			 (char[]){1, 1, 0},
+			 (char[]){0, 1, 1},
+			 (char[]){0, 0, 0}},
+	 3},
+	// shape T
+	{(char *[]){
+			 (char[]){0, 0, 0},
+			 (char[]){1, 1, 1},
+			 (char[]){0, 1, 0}},
+	 3},
+	// shape L
+	{(char *[]){
+			 (char[]){1, 0, 0},
+			 (char[]){1, 0, 0},
+			 (char[]){1, 1, 0}},
+	 3},
+	// shape J
+	{(char *[]){
+			 (char[]){0, 0, 1},
+			 (char[]){0, 0, 1},
+			 (char[]){0, 1, 1}},
+	 3},
+	// shape O
+	{(char *[]){
+			 (char[]){1, 1},
+			 (char[]){1, 1}},
+	 2},
+	// shape I
+	{(char *[]){
+			 (char[]){0, 0, 1, 0},
+			 (char[]){0, 0, 1, 0},
+			 (char[]){0, 0, 1, 0},
+			 (char[]){0, 0, 1, 0}},
+	 4}};
 
 t_move to_move(int ch) {
     printw("%d\n", ch);
