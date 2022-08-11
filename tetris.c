@@ -9,6 +9,7 @@
 #define COL 15
 #define FRAME_INTERVAL_USEC 400000
 #define NUM_TETRIMINOS 7
+#define SCORE_PER_LINE 100
 
 typedef enum e_key {
     TETROMINO_DOWN = 's',
@@ -77,18 +78,18 @@ t_tetromino duplicate_piece(const t_tetromino piece) {
             .row = piece.row,
             .col = piece.col};
 
-    for (int i = 0; i < new_piece.length; i++) {
-        new_piece.array[i] = (char *) malloc(sizeof(char) * new_piece.length);
-        for (int j = 0; j < new_piece.length; j++) {
-            new_piece.array[i][j] = piece.array[i][j];
+    for (int r = 0; r < new_piece.length; r++) {
+        new_piece.array[r] = (char *) malloc(sizeof(char) * new_piece.length);
+        for (int c = 0; c < new_piece.length; c++) {
+            new_piece.array[r][c] = piece.array[r][c];
         }
     }
     return new_piece;
 }
 
 void destroy_piece(t_tetromino piece) {
-    for (int i = 0; i < piece.length; i++) {
-        free(piece.array[i]);
+    for (int r = 0; r < piece.length; r++) {
+        free(piece.array[r]);
     }
     free(piece.array);
 }
@@ -96,9 +97,10 @@ void destroy_piece(t_tetromino piece) {
 bool is_valid_position(const t_tetromino piece, const t_board board) {
     for (int i = 0; i < piece.length; i++) {
         for (int j = 0; j < piece.length; j++) {
-            int r = piece.row + i, c = piece.col + j;
             if (!piece.array[i][j])
                 continue;
+            int r = piece.row + i;
+			int c = piece.col + j;
             if (c < 0 || c >= COL || r >= ROW)
                 return false;
             if (board[r][c])
@@ -128,18 +130,17 @@ void print_tetris(const t_board board, const t_tetromino current, int score) {
         }
     }
     clear();
-    for (int i = 0; i < COL - 9; i++)
+    for (int c = 0; c < COL - 9; c++)
         printw(" ");
     printw("42 Tetris\n");
-    for (int i = 0; i < ROW; i++) {
-        for (int j = 0; j < COL; j++) {
-            printw("%c ", (board[i][j] + buffer[i][j]) ? '#' : '.');
+    for (int r = 0; r < ROW; r++) {
+        for (int c = 0; c < COL; c++) {
+            printw("%c ", (board[r][c] + buffer[r][c]) ? '#' : '.');
         }
         printw("\n");
     }
     printw("\nScore: %d\n", score);
 }
-
 
 int has_to_update(t_timeval updated_at, suseconds_t frame_interval_usec) {
     t_timeval now;
@@ -168,8 +169,8 @@ void copy_current_to_board(const t_tetromino current, t_board board) {
 }
 
 bool is_completely_filled(int row, const t_board board) {
-    for (int i = 0; i < COL; i++) {
-        if (!board[row][i])
+    for (int c = 0; c < COL; c++) {
+        if (!board[row][c])
             return false;
     }
     return true;
@@ -186,13 +187,17 @@ void clear_line(int row, t_board board) {
         board[0][c] = 0;
 }
 
-void clear_lines(int *score, t_board board) {
-    for (int n = 0; n < ROW; n++) {
-        if (is_completely_filled(n, board)) {
-            clear_line(n, board);
-            *score += 100;
+// Returns how many lines are cleared
+int	clear_lines(t_board board) {
+	int num_cleared = 0;
+
+    for (int r = 0; r < ROW; r++) {
+        if (is_completely_filled(r, board)) {
+            clear_line(r, board);
+			num_cleared++;
         }
     }
+	return num_cleared;
 }
 
 void move_down(t_tetromino *piece) {
@@ -207,30 +212,7 @@ void move_left(t_tetromino *piece) {
     piece->col--;
 }
 
-bool is_executable(t_key op, const t_tetromino piece, const t_board board) {
-    t_tetromino temp = duplicate_piece(piece);
-    switch (op) {
-        case TETROMINO_DOWN:
-            move_down(&temp);
-            break;
-        case TETROMINO_RIGHT:
-            move_right(&temp);
-            break;
-        case TETROMINO_LEFT:
-            move_left(&temp);
-            break;
-        case TETROMINO_ROTATE:
-            rotate_piece(&temp);
-            break;
-        default:
-            return false;
-    }
-    bool res = is_valid_position(temp, board);
-    destroy_piece(temp);
-    return res;
-}
-
-void execute(t_key op, t_tetromino *piece) {
+static void execute_to_piece(t_key op, t_tetromino *piece) {
     switch (op) {
         case TETROMINO_DOWN:
             move_down(piece);
@@ -249,12 +231,20 @@ void execute(t_key op, t_tetromino *piece) {
     }
 }
 
-void update_terminal(t_key op, t_context *ctx) {
-    if (is_executable(op, ctx->current, ctx->board)) {
-        execute(op, &ctx->current);
+static bool is_executable_to_piece(t_key op, const t_tetromino piece, const t_board board) {
+    t_tetromino temp = duplicate_piece(piece);
+	execute_to_piece(op, &temp);
+    bool is_executable = is_valid_position(temp, board);
+    destroy_piece(temp);
+    return is_executable;
+}
+
+void execute(t_key op, t_context *ctx) {
+    if (is_executable_to_piece(op, ctx->current, ctx->board)) {
+        execute_to_piece(op, &ctx->current);
     } else if (op == TETROMINO_DOWN) {
         copy_current_to_board(ctx->current, ctx->board);
-        clear_lines(&ctx->score, ctx->board);
+        ctx->score += SCORE_PER_LINE * clear_lines(ctx->board);
         spawn_random_tetromino(&ctx->current);
         if (!is_valid_position(ctx->current, ctx->board)) {
             ctx->game_on = false;
@@ -298,12 +288,13 @@ void loop_game(t_context *ctx) {
     int key_input;
 
     while (ctx->game_on) {
-        if ((key_input = getch()) != ERR) {
-            update_terminal(key_input, ctx);
+		key_input = getch();
+        if (key_input != ERR) {
+            execute(key_input, ctx);
             print_tetris(ctx->board, ctx->current, ctx->score);
         }
         if (has_to_update(ctx->updated_at, FRAME_INTERVAL_USEC)) {
-            update_terminal(TETROMINO_DOWN, ctx);
+            execute(TETROMINO_DOWN, ctx);
             print_tetris(ctx->board, ctx->current, ctx->score);
             gettimeofday(&ctx->updated_at, NULL);
         }
