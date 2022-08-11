@@ -11,12 +11,15 @@
 #define NUM_TETRIMINOS 7
 #define SCORE_PER_LINE 100
 
-typedef enum e_key {
-    TETROMINO_DOWN = 's',
-    TETROMINO_LEFT = 'a',
-    TETROMINO_RIGHT = 'd',
-    TETROMINO_ROTATE = 'w',
-} t_key;
+typedef enum {
+    MOVE_DOWN,
+    MOVE_LEFT,
+    MOVE_RIGHT,
+    MOVE_ROTATE,
+    MOVE_UNKNOWN,
+} t_move;
+
+
 
 typedef struct {
     char **array;
@@ -70,6 +73,22 @@ const t_tetromino tetriminos[NUM_TETRIMINOS] = {
                  (char[]){0, 0, 0, 0},
                  (char[]){0, 0, 0, 0}},
          4}};
+
+t_move to_move(int ch) {
+    printw("%d\n", ch);
+    switch (ch) {
+        case 's':
+            return MOVE_DOWN;
+        case 'a':
+            return MOVE_LEFT;
+        case 'd':
+            return MOVE_RIGHT;
+        case 'w':
+            return MOVE_ROTATE;
+        default:
+            return MOVE_UNKNOWN;
+    }
+}
 
 t_tetromino duplicate_piece(const t_tetromino piece) {
     t_tetromino new_piece = {
@@ -212,18 +231,18 @@ void move_left(t_tetromino *piece) {
     piece->col--;
 }
 
-static void execute_to_piece(t_key op, t_tetromino *piece) {
-    switch (op) {
-        case TETROMINO_DOWN:
+static void move_piece(t_move move, t_tetromino *piece) {
+    switch (move) {
+        case MOVE_DOWN:
             move_down(piece);
             break;
-        case TETROMINO_RIGHT:
+        case MOVE_RIGHT:
             move_right(piece);
             break;
-        case TETROMINO_LEFT:
+        case MOVE_LEFT:
             move_left(piece);
             break;
-        case TETROMINO_ROTATE:
+        case MOVE_ROTATE:
             rotate_piece(piece);
             break;
         default:
@@ -231,18 +250,18 @@ static void execute_to_piece(t_key op, t_tetromino *piece) {
     }
 }
 
-static bool is_executable_to_piece(t_key op, const t_tetromino piece, const t_board board) {
+static bool has_room_to_move(t_move move, const t_tetromino piece, const t_board board) {
     t_tetromino temp = duplicate_piece(piece);
-	execute_to_piece(op, &temp);
+	move_piece(move, &temp);
     bool is_executable = is_valid_position(temp, board);
     destroy_piece(temp);
     return is_executable;
 }
 
-void execute(t_key op, t_context *ctx) {
-    if (is_executable_to_piece(op, ctx->current, ctx->board)) {
-        execute_to_piece(op, &ctx->current);
-    } else if (op == TETROMINO_DOWN) {
+void execute(t_move move, t_context *ctx) {
+    if (has_room_to_move(move, ctx->current, ctx->board)) {
+        move_piece(move, &ctx->current);
+    } else if (move == MOVE_DOWN) {
         copy_current_to_board(ctx->current, ctx->board);
         ctx->score += SCORE_PER_LINE * clear_lines(ctx->board);
         spawn_random_tetromino(&ctx->current);
@@ -290,11 +309,11 @@ void loop_game(t_context *ctx) {
     while (ctx->game_on) {
 		key_input = getch();
         if (key_input != ERR) {
-            execute(key_input, ctx);
+            execute(to_move(key_input), ctx);
             print_tetris(ctx->board, ctx->current, ctx->score);
         }
         if (has_to_update(ctx->updated_at, FRAME_INTERVAL_USEC)) {
-            execute(TETROMINO_DOWN, ctx);
+            execute(MOVE_DOWN, ctx);
             print_tetris(ctx->board, ctx->current, ctx->score);
             gettimeofday(&ctx->updated_at, NULL);
         }
