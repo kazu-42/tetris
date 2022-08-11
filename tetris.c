@@ -22,12 +22,14 @@ typedef struct {
 } t_tetromino;
 
 typedef bool t_board[ROW][COL];
+typedef struct timeval t_timeval;
 
 typedef struct {
 	t_tetromino	current;
 	t_board		board;
 	int			score;
 	bool		game_on;
+	t_timeval	updated_at;
 } t_context;
 
 const t_tetromino pieces[7] = {
@@ -113,11 +115,13 @@ void print_tetris(const t_board board, const t_tetromino current, int score) {
 	printw("\nScore: %d\n", score);
 }
 
-struct timeval before_now, now;
 
-int has_to_update() {
+int has_to_update(t_timeval updated_at) {
+	t_timeval now;
+
+	gettimeofday(&now, NULL);
 	return ((suseconds_t)(now.tv_sec * 1000000 + now.tv_usec) -
-			((suseconds_t) before_now.tv_sec * 1000000 + before_now.tv_usec)) > FRAME_INTERVAL_USEC;
+			((suseconds_t) updated_at.tv_sec * 1000000 + updated_at.tv_usec)) > FRAME_INTERVAL_USEC;
 }
 
 void spawn_random_tetromino(t_tetromino *current) {
@@ -251,13 +255,13 @@ void	init_context(t_context *ctx) {
 		.current = {0},
 		.board = {0}
 	};
+	gettimeofday(&ctx->updated_at, NULL);
 }
 
 void	init_game(t_context *ctx) {
 	init_context(ctx);
 	srand(time(NULL));
 	initscr();
-	gettimeofday(&before_now, NULL);
 	timeout(1);
 	spawn_random_tetromino(&ctx->current);
 	if(!is_valid_position(ctx->current, ctx->board)) {
@@ -274,11 +278,10 @@ void	loop_game(t_context *ctx) {
 			update_terminal(key_input, ctx);
 			print_tetris(ctx->board, ctx->current, ctx->score);
 		}
-		gettimeofday(&now, NULL);
-		if (has_to_update()) {
+		if (has_to_update(ctx->updated_at)) {
 			update_terminal(TETROMINO_DOWN, ctx);
 			print_tetris(ctx->board, ctx->current, ctx->score);
-			gettimeofday(&before_now, NULL);
+			gettimeofday(&ctx->updated_at, NULL);
 		}
 	}
 }
