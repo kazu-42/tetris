@@ -37,8 +37,7 @@ const t_tetromino tetriminos[NUM_TETRIMINOS] = {
 		{(char *[]) {
 			(char[]) {0, 1, 1},
 			(char[]) {1, 1, 0},
-			(char[]) {0, 0, 0}
-			}, 3},
+			(char[]) {0, 0, 0}}, 3},
 		{(char *[]) {
 			(char[]) {1, 1, 0},
 			(char[]) {0, 1, 1},
