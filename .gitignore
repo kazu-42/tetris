@@ -1,6 +1,12 @@
 # tetris
 tetris
 
+# gitignore
+.vscode
+.idea
+cmake-build-debug
+CMakeLists.txt
+
 # Prerequisites
 *.d
 
