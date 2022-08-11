@@ -19,7 +19,7 @@ typedef enum e_key {
 
 typedef struct {
     char **array;
-    int width, row, col;
+    int length, row, col;
 } t_tetromino;
 
 typedef char t_board[ROW][COL];
@@ -72,14 +72,14 @@ const t_tetromino tetriminos[NUM_TETRIMINOS] = {
 
 t_tetromino duplicate_piece(const t_tetromino piece) {
     t_tetromino new_piece = {
-            .array = malloc(sizeof(char *) * piece.width),
-            .width = piece.width,
+            .array = malloc(sizeof(char *) * piece.length),
+            .length = piece.length,
             .row = piece.row,
             .col = piece.col};
 
-    for (int i = 0; i < new_piece.width; i++) {
-        new_piece.array[i] = (char *) malloc(sizeof(char) * new_piece.width);
-        for (int j = 0; j < new_piece.width; j++) {
+    for (int i = 0; i < new_piece.length; i++) {
+        new_piece.array[i] = (char *) malloc(sizeof(char) * new_piece.length);
+        for (int j = 0; j < new_piece.length; j++) {
             new_piece.array[i][j] = piece.array[i][j];
         }
     }
@@ -87,15 +87,15 @@ t_tetromino duplicate_piece(const t_tetromino piece) {
 }
 
 void destroy_piece(t_tetromino piece) {
-    for (int i = 0; i < piece.width; i++) {
+    for (int i = 0; i < piece.length; i++) {
         free(piece.array[i]);
     }
     free(piece.array);
 }
 
 bool is_valid_position(const t_tetromino piece, const t_board board) {
-    for (int i = 0; i < piece.width; i++) {
-        for (int j = 0; j < piece.width; j++) {
+    for (int i = 0; i < piece.length; i++) {
+        for (int j = 0; j < piece.length; j++) {
             int r = piece.row + i, c = piece.col + j;
             if (!piece.array[i][j])
                 continue;
@@ -110,9 +110,9 @@ bool is_valid_position(const t_tetromino piece, const t_board board) {
 
 void rotate_piece(t_tetromino *piece) {//rotate_clockwise
     t_tetromino temp = duplicate_piece(*piece);
-    for (int i = 0; i < piece->width; i++) {
-        for (int j = 0; j < piece->width; j++) {
-            int k = piece->width - 1 - j;
+    for (int i = 0; i < piece->length; i++) {
+        for (int j = 0; j < piece->length; j++) {
+            int k = piece->length - 1 - j;
             piece->array[i][j] = temp.array[k][i];
         }
     }
@@ -121,8 +121,8 @@ void rotate_piece(t_tetromino *piece) {//rotate_clockwise
 
 void print_tetris(const t_board board, const t_tetromino current, int score) {
     char buffer[ROW][COL] = {0};
-    for (int i = 0; i < current.width; i++) {
-        for (int j = 0; j < current.width; j++) {
+    for (int i = 0; i < current.length; i++) {
+        for (int j = 0; j < current.length; j++) {
             if (current.array[i][j])
                 buffer[current.row + i][current.col + j] = current.array[i][j];
         }
@@ -152,15 +152,15 @@ int has_to_update(t_timeval updated_at, suseconds_t frame_interval_usec) {
 
 void spawn_random_tetromino(t_tetromino *current) {
     t_tetromino new_piece = duplicate_piece(tetriminos[rand() % NUM_TETRIMINOS]);
-    new_piece.col = rand() % (COL - new_piece.width + 1);
+    new_piece.col = rand() % (COL - new_piece.length + 1);
     new_piece.row = 0;
     destroy_piece(*current);
     *current = new_piece;
 }
 
 void copy_current_to_board(const t_tetromino current, t_board board) {
-    for (int i = 0; i < current.width; i++) {
-        for (int j = 0; j < current.width; j++) {
+    for (int i = 0; i < current.length; i++) {
+        for (int j = 0; j < current.length; j++) {
             if (current.array[i][j])
                 board[current.row + i][current.col + j] = current.array[i][j];
         }
@@ -263,10 +263,9 @@ void update_terminal(t_key op, t_context *ctx) {
 }
 
 void print_result(int score, const t_board board) {
-    int i, j;
-    for (i = 0; i < ROW; i++) {
-        for (j = 0; j < COL; j++) {
-            printf("%c ", board[i][j] ? '#' : '.');
+    for (int r = 0; r < ROW; r++) {
+        for (int c = 0; c < COL; c++) {
+            printf("%c ", board[r][c] ? '#' : '.');
         }
         putchar('\n');
     }
