@@ -8,6 +8,7 @@
 #define ROW 20
 #define COL 15
 #define FRAME_INTERVAL_USEC 400000
+#define NUM_TETRIMINOS 7
 
 typedef enum e_key{
 	TETROMINO_DOWN = 's',
@@ -21,7 +22,7 @@ typedef struct {
 	int width, row, col;
 } t_tetromino;
 
-typedef bool t_board[ROW][COL];
+typedef char t_board[ROW][COL];
 typedef struct timeval t_timeval;
 
 typedef struct {
@@ -32,14 +33,36 @@ typedef struct {
 	t_timeval	updated_at;
 } t_context;
 
-const t_tetromino pieces[7] = {
-		{(char *[]) {(char[]) {0, 1, 1}, (char[]) {1, 1, 0}, (char[]) {0, 0, 0}},                                 3},
-		{(char *[]) {(char[]) {1, 1, 0}, (char[]) {0, 1, 1}, (char[]) {0, 0, 0}},                                 3},
-		{(char *[]) {(char[]) {0, 1, 0}, (char[]) {1, 1, 1}, (char[]) {0, 0, 0}},                                 3},
-		{(char *[]) {(char[]) {0, 0, 1}, (char[]) {1, 1, 1}, (char[]) {0, 0, 0}},                                 3},
-		{(char *[]) {(char[]) {1, 0, 0}, (char[]) {1, 1, 1}, (char[]) {0, 0, 0}},                                 3},
-		{(char *[]) {(char[]) {1, 1}, (char[]) {1, 1}},                                                           2},
-		{(char *[]) {(char[]) {0, 0, 0, 0}, (char[]) {1, 1, 1, 1}, (char[]) {0, 0, 0, 0}, (char[]) {0, 0, 0, 0}}, 4}
+const t_tetromino tetriminos[NUM_TETRIMINOS] = {
+		{(char *[]) {
+			(char[]) {0, 1, 1},
+			(char[]) {1, 1, 0},
+			(char[]) {0, 0, 0}
+			}, 3},
+		{(char *[]) {
+			(char[]) {1, 1, 0},
+			(char[]) {0, 1, 1},
+			(char[]) {0, 0, 0}}, 3},
+		{(char *[]) {
+			(char[]) {0, 1, 0},
+			(char[]) {1, 1, 1},
+			(char[]) {0, 0, 0}}, 3},
+		{(char *[]) {
+			(char[]) {0, 0, 1},
+			(char[]) {1, 1, 1},
+			(char[]) {0, 0, 0}}, 3},
+		{(char *[]) {
+			(char[]) {1, 0, 0},
+			(char[]) {1, 1, 1},
+			(char[]) {0, 0, 0}}, 3},
+		{(char *[]) {
+			(char[]) {1, 1},
+			(char[]) {1, 1}}, 2},
+		{(char *[]) {
+			(char[]) {0, 0, 0, 0},
+			(char[]) {1, 1, 1, 1},
+			(char[]) {0, 0, 0, 0},
+			(char[]) {0, 0, 0, 0}}, 4}
 };
 
 t_tetromino copy_piece(const t_tetromino piece) {
@@ -125,8 +148,8 @@ int has_to_update(t_timeval updated_at, suseconds_t frame_interval_usec) {
 }
 
 void spawn_random_tetromino(t_tetromino *current) {
-	t_tetromino new_piece = copy_piece(pieces[rand()%7]);
-	new_piece.col = rand()%(COL - new_piece.width + 1);
+	t_tetromino new_piece = copy_piece(tetriminos[rand() % NUM_TETRIMINOS]);
+	new_piece.col = rand() % (COL - new_piece.width + 1);
 	new_piece.row = 0;
 	destroy_piece(*current);
 	*current = new_piece;
