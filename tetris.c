@@ -116,12 +116,12 @@ void print_tetris(const t_board board, const t_tetromino current, int score) {
 }
 
 
-int has_to_update(t_timeval updated_at) {
+int has_to_update(t_timeval updated_at, suseconds_t frame_interval_usec) {
 	t_timeval now;
 
 	gettimeofday(&now, NULL);
 	return ((suseconds_t)(now.tv_sec * 1000000 + now.tv_usec) -
-			((suseconds_t) updated_at.tv_sec * 1000000 + updated_at.tv_usec)) > FRAME_INTERVAL_USEC;
+			((suseconds_t) updated_at.tv_sec * 1000000 + updated_at.tv_usec)) > frame_interval_usec;
 }
 
 void spawn_random_tetromino(t_tetromino *current) {
@@ -278,7 +278,7 @@ void	loop_game(t_context *ctx) {
 			update_terminal(key_input, ctx);
 			print_tetris(ctx->board, ctx->current, ctx->score);
 		}
-		if (has_to_update(ctx->updated_at)) {
+		if (has_to_update(ctx->updated_at, FRAME_INTERVAL_USEC)) {
 			update_terminal(TETROMINO_DOWN, ctx);
 			print_tetris(ctx->board, ctx->current, ctx->score);
 			gettimeofday(&ctx->updated_at, NULL);
