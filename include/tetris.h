@@ -6,18 +6,18 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:22:45 by susami            #+#    #+#             */
-/*   Updated: 2022/08/13 00:30:34 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/13 01:50:11 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TETRIS_H
-# define TETRIS_H
+#define TETRIS_H
 
 #include <stdbool.h>
 #include <sys/time.h>
 #define ROW_SIZE 20
 #define COL_SIZE 15
-#define ENABLE_COLOR false
+#define COLOR_ENABLED false
 
 typedef enum {
     MOVE_DOWN,
@@ -29,14 +29,14 @@ typedef enum {
 } t_move;
 
 typedef struct {
-	int row;
-	int col;
+    int row;
+    int col;
 } t_position;
 
 typedef struct {
     char **array;
-    int length; // length is max(width, height) of the tetromino
-	t_position position;
+    int length;// length is max(width, height) of the tetromino
+    t_position position;
 } t_tetromino;
 
 typedef char t_board[ROW_SIZE][COL_SIZE];
@@ -46,7 +46,7 @@ typedef struct {
     int score;
     bool game_on;
     t_board board;
-	double gravity;
+    double gravity;
     t_tetromino current;
     t_timeval last_fell_at;
 } t_context;

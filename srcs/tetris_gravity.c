@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:49 by susami            #+#    #+#             */
-/*   Updated: 2022/08/13 00:32:26 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/13 01:08:10 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,8 @@ void apply_gravity(t_context *ctx) {
 }
 
 // The greater the gravity is, the faster the piece falls.
-// Gravity is expressed in unit G, where 1G = 1 cell per frame, and 0.1G = 1 cell per 10 frames.
+// Gravity is expressed in unit G [cell / frame],
+// where 1G = 1 cell per frame, and 0.1G = 1 cell per 10 frames.
 bool is_time_to_fall(const t_timeval last_fell_at, const double gravity) {
     t_timeval now;
 
@@ -68,8 +69,8 @@ bool is_time_to_fall(const t_timeval last_fell_at, const double gravity) {
 
 static bool is_line_filled(const int row, const t_board board) {
     for (int c = 0; c < COL_SIZE; c++) {
-        if (!board[row][c])
-            return false;
+        const bool is_cell_empty = !board[row][c];
+        if (is_cell_empty) { return false; }
     }
     return true;
 }
@@ -98,6 +99,8 @@ static int clear_filled_lines(t_board board) {
     return num_cleared;
 }
 
+// Increase gravity according to how many lines cleared.
+// This function should be used to adjust the game level.
 static void increase_gravity(double *gravity, const int lines_cleared) {
     *gravity = *gravity + GRAVITY_INCREASE_PER_LINE * lines_cleared;
 }

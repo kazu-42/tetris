@@ -6,11 +6,12 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:59 by susami            #+#    #+#             */
-/*   Updated: 2022/08/13 00:37:15 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/13 01:56:09 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tetris.h"
+#include <ncurses.h>
 
 t_move to_move(int ch);
 
@@ -39,13 +40,17 @@ static void reverse_individual_cols_matrix(char **matrix, const int size);
 
 static void swap(char *a, char *b);
 
+// Convert key from getch() to t_move
 t_move to_move(const int ch) {
     switch (ch) {
         case 's':
+        case KEY_DOWN:
             return MOVE_DOWN;
         case 'a':
+        case KEY_LEFT:
             return MOVE_LEFT;
         case 'd':
+        case KEY_RIGHT:
             return MOVE_RIGHT;
         case 'w':
             return MOVE_ROTATE_CLOCKWISE;
@@ -136,14 +141,6 @@ static void rotate_tetromino_counter_clockwise(t_tetromino *piece) {
     reverse_individual_cols_matrix(piece->array, piece->length);
 }
 
-static void swap(char *a, char *b) {
-    char tmp;
-
-    tmp = *a;
-    *a = *b;
-    *b = tmp;
-}
-
 /*
 1  2  3    [transpose]    1  4  7   [reverse rows]  7  4  1
 4  5  6  -------------->  2  5  8  -------------->  8  5  2
@@ -189,4 +186,12 @@ static void reverse_individual_cols_matrix(char **matrix, const int size) {
             high--;
         }
     }
+}
+
+static void swap(char *a, char *b) {
+    char tmp;
+
+    tmp = *a;
+    *a = *b;
+    *b = tmp;
 }
