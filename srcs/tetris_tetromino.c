@@ -12,7 +12,7 @@
 
 #include <stdlib.h>
 #include <ncurses.h>
-#include "tetris.h"
+#include "../srcs/tetris.h"
 
 #define TETROMINO_S 1
 #define TETROMINO_Z 2
