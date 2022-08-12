@@ -1,4 +1,4 @@
-#include "tetris.h"
+#include "../include/tetris.h"
 #include <ncurses.h>
 #include <stdlib.h>
 

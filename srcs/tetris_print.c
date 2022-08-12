@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "tetris.h"
+#include "../include/tetris.h"
 #include <ncurses.h>
 #include <stdio.h>
 #include <string.h>

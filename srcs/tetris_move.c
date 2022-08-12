@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "tetris.h"
+#include "../include/tetris.h"
 #include <ncurses.h>
 
 static bool has_room_to_move(const t_move move, const t_tetromino piece, const t_board board);
