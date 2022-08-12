@@ -1,4 +1,5 @@
 NAME	=	tetris
+CC		=	gcc
 CFLAGS	=	-Wall -Wextra -Werror
 LIBRARY	=	-lncurses
 INCLUDE	=	-Iinclude
@@ -17,7 +18,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $^ -o $@ -c $(CFLAGS) $(INCLUDE)
 
 $(NAME): $(OBJS)
-	gcc $(OBJS) $(LIBRARY) -o $(NAME) $(CFLAGS) $(INCLUDE)
+	$(CC) $(OBJS) $(LIBRARY) -o $(NAME) $(CFLAGS) $(INCLUDE)
 
 .PHONY: all
 all: $(NAME)
