@@ -51,7 +51,7 @@ void run_tetris(t_context *ctx) {
 		key_input = getch();
         if (key_input != ERR) {
 			move = to_move(key_input);
-            try_move(move, &ctx->current, ctx->board);
+            try_move_tetromino(move, &ctx->current, ctx->board);
             printw_current_screen(ctx->board, ctx->current, ctx->score);
         }
         if (is_time_to_fall(ctx->updated_at, ctx->gravity)) {

@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:49 by susami            #+#    #+#             */
-/*   Updated: 2022/08/12 17:48:00 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/12 18:20:45 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void apply_gravity(t_context *ctx) {
 	bool is_tetoromino_landed;
 	int	lines_cleared;
 
-	is_tetoromino_landed = !try_move(MOVE_DOWN, &ctx->current, ctx->board);
+	is_tetoromino_landed = !try_move_tetromino(MOVE_DOWN, &ctx->current, ctx->board);
     if (is_tetoromino_landed) {
         lock_tetromino_to_board(ctx->current, ctx->board);
 		lines_cleared = clear_filled_lines(ctx->board);

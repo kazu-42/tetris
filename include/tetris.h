@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:22:45 by susami            #+#    #+#             */
-/*   Updated: 2022/08/12 17:21:16 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/12 18:20:30 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,8 @@ bool is_valid_position(const t_tetromino piece, const t_board board);
 
 // tetris_move.c
 t_move to_move(int ch);
-void apply_move(t_move move, t_tetromino *piece);
-bool try_move(t_move move, t_tetromino *piece, const t_board board);
+void move_tetromino(t_move move, t_tetromino *piece);
+bool try_move_tetromino(t_move move, t_tetromino *piece, const t_board board);
 
 // tetris_gravity.c
 void apply_gravity(t_context *ctx);
