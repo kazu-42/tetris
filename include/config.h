@@ -9,5 +9,10 @@
 # define FILLED_CELL '#'
 # define UNKNOWN_CELL '?'
 
+# define DEFAULT_GRAVITY 0.1
+# define CURSES_READ_INTERVAL_MILLISEC 1
+# define SCORE_PER_LINE 100
+# define GRAVITY_INCREASE_PER_LINE 0.01
+
 
 #endif //CONFIG_H

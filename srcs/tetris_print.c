@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "tetris.h"
-#include "config.h"
 #include <ncurses.h>
 #include <stdio.h>
 #include <string.h>

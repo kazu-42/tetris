@@ -14,8 +14,6 @@
 
 #define ONE_SECOND_IN_USEC 1000000
 #define FRAME_PER_SECOND 10
-#define SCORE_PER_LINE 100
-#define GRAVITY_INCREASE_PER_LINE 0.01
 
 static bool is_line_filled(const int row, const t_board board);
 
