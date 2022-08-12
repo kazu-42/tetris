@@ -20,27 +20,76 @@ void destroy_tetromino(t_tetromino piece);
 bool is_valid_position(const t_tetromino piece, const t_board board);
 
 static const t_tetromino tetrominoes[NUM_TETRIMINOS] = {
-        // shape S
-        {
-                .array = (char *[]){
-                        (char[]){0, 1, 1},
-                        (char[]){1, 1, 0},
-                        (char[]){0, 0, 0}},
-                .length = 3,
-                .row = 0,
-                .col = 0},
-        // shape Z
-        {.array = (char *[]){(char[]){1, 1, 0}, (char[]){0, 1, 1}, (char[]){0, 0, 0}}, .length = 3, .row = 0, .col = 0},
-        // shape T
-        {.array = (char *[]){(char[]){0, 0, 0}, (char[]){1, 1, 1}, (char[]){0, 1, 0}}, .length = 3, .row = 0, .col = 0},
-        // shape L
-        {.array = (char *[]){(char[]){1, 0, 0}, (char[]){1, 0, 0}, (char[]){1, 1, 0}}, .length = 3, .row = 0, .col = 0},
-        // shape J
-        {.array = (char *[]){(char[]){0, 0, 1}, (char[]){0, 0, 1}, (char[]){0, 1, 1}}, .length = 3, .row = 0, .col = 0},
-        // shape O
-        {.array = (char *[]){(char[]){1, 1}, (char[]){1, 1}}, .length = 2, .row = 0, .col = 0},
-        // shape I
-        {.array = (char *[]){(char[]){0, 0, 1, 0}, (char[]){0, 0, 1, 0}, (char[]){0, 0, 1, 0}, (char[]){0, 0, 1, 0}}, .length = 4, .row = 0, .col = 0}};
+	// shape S
+	{
+		.array = (char *[]){
+			 (char[]){0, 1, 1},
+			 (char[]){1, 1, 0},
+			 (char[]){0, 0, 0}},
+	 	.length = 3,
+		.row = 0,
+		.col = 0
+	},
+	// shape Z
+	{
+		.array = (char *[]){
+			 (char[]){1, 1, 0},
+			 (char[]){0, 1, 1},
+			 (char[]){0, 0, 0}},
+	 	.length = 3,
+		.row = 0,
+		.col = 0
+	},
+	// shape T
+	{
+		.array = (char *[]){
+			 (char[]){0, 0, 0},
+			 (char[]){1, 1, 1},
+			 (char[]){0, 1, 0}},
+	 	.length = 3,
+		.row = 0,
+		.col = 0
+	 },
+	// shape L
+	{
+		.array = (char *[]){
+			 (char[]){1, 0, 0},
+			 (char[]){1, 0, 0},
+			 (char[]){1, 1, 0}},
+	 	.length = 3,
+		.row = 0,
+		.col = 0
+	 },
+	// shape J
+	{
+		.array = (char *[]){
+			 (char[]){0, 0, 1},
+			 (char[]){0, 0, 1},
+			 (char[]){0, 1, 1}},
+	 	.length = 3,
+		.row = 0,
+		.col = 0
+	 },
+	// shape O
+	{
+		.array = (char *[]){
+			 (char[]){1, 1},
+			 (char[]){1, 1}},
+	 	.length = 2,
+		.row = 0,
+		.col = 0
+	 },
+	// shape I
+	{
+		.array = (char *[]){
+			 (char[]){0, 0, 1, 0},
+			 (char[]){0, 0, 1, 0},
+			 (char[]){0, 0, 1, 0},
+			 (char[]){0, 0, 1, 0}},
+	 	.length = 4,
+		.row = 0,
+		.col = 0
+	 }};
 
 t_tetromino generate_random_tetromino(void) {
     t_tetromino new_piece = duplicate_tetromino(tetrominoes[rand() % NUM_TETRIMINOS]);
