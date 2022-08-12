@@ -36,6 +36,10 @@ void init_seed(void) {
 // init screen and configure blocking read interval
 void init_curses(void) {
     initscr();
+	if (ENABLE_COLOR && has_colors()) {
+		start_color();
+		init_curses_tetromino_colors();
+	}
     timeout(CURSES_READ_INTERVAL_MILLISEC);
 }
 

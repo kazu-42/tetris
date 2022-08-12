@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:40 by susami            #+#    #+#             */
-/*   Updated: 2022/08/12 23:16:15 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/13 00:23:21 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
 // WIN_SIZE is about 2x of COL_SIZE because space is added between each cell
 #define WIN_SIZE (2 * COL_SIZE - 1)
 #define TETRIS_TITLE "42 tetris"
+#define EMPTY_CELL '.'
+#define FILLED_CELL '#'
+#define UNKNOWN_CELL '?'
 
 // print.c
 void printw_tetris_screen(const t_board board, const t_tetromino piece, int score);
@@ -67,20 +70,66 @@ static void print_score(int score) {
     printf("Score: %d\n", score);
 }
 
-static void printw_board(const char buffer[ROW_SIZE][COL_SIZE]) {
+static void printw_cell(char cell) {
+	switch (cell) {
+		case 0:
+            printw("%c ", EMPTY_CELL);
+			break;
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+			if (ENABLE_COLOR) {
+				attron(COLOR_PAIR(cell));
+            	printw("%c ", FILLED_CELL);
+				attroff(COLOR_PAIR(cell));
+			} else {
+            	printw("%c ", FILLED_CELL);
+			}
+			break;
+		default:
+			printw("%c ", UNKNOWN_CELL);
+			break;
+	}
+}
+
+static void print_cell(char cell) {
+	switch (cell) {
+		case 0:
+            printf("%c ", EMPTY_CELL);
+			break;
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+            printf("%c ", FILLED_CELL);
+			break;
+		default:
+			printf("%c ", UNKNOWN_CELL);
+			break;
+	}
+}
+
+static void printw_board(const t_board buffer) {
     for (int r = 0; r < ROW_SIZE; r++) {
         for (int c = 0; c < COL_SIZE; c++) {
-            printw("%c ", buffer[r][c] ? '#' : '.');
+			printw_cell(buffer[r][c]);
         }
         printw("\n");
     }
 	printw("\n");
 }
 
-static void print_board(const char buffer[ROW_SIZE][COL_SIZE]) {
+static void print_board(const t_board buffer) {
     for (int r = 0; r < ROW_SIZE; r++) {
         for (int c = 0; c < COL_SIZE; c++) {
-            printf("%c ", buffer[r][c] ? '#' : '.');
+			print_cell(buffer[r][c]);
         }
         printf("\n");
     }

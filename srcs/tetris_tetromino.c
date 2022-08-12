@@ -6,12 +6,21 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:45 by susami            #+#    #+#             */
-/*   Updated: 2022/08/12 22:48:40 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/13 00:07:59 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
+#include <ncurses.h>
 #include "tetris.h"
+
+#define TETROMINO_S 1
+#define TETROMINO_Z 2
+#define TETROMINO_T 3
+#define TETROMINO_L 4
+#define TETROMINO_J 5
+#define TETROMINO_O 6
+#define TETROMINO_I 7
 
 #define NUM_TETRIMINOS 7
 t_tetromino generate_random_tetromino(void);
@@ -19,9 +28,10 @@ t_tetromino duplicate_tetromino(const t_tetromino piece);
 void destroy_tetromino(t_tetromino piece);
 bool is_valid_position(const t_tetromino piece, const t_board board);
 void merge_tetromino_to_board(const t_tetromino piece, t_board board);
+void init_curses_tetromino_colors(void);
 
 static const t_tetromino tetrominoes[NUM_TETRIMINOS] = {
-	// shape S
+	// 1. shape S
 	{
 		.array = (char *[]){
 			 (char[]){0, 1, 1},
@@ -30,57 +40,57 @@ static const t_tetromino tetrominoes[NUM_TETRIMINOS] = {
 	 	.length = 3,
 		.position = {0}
 	},
-	// shape Z
+	// 2. shape Z
 	{
 		.array = (char *[]){
-			 (char[]){1, 1, 0},
-			 (char[]){0, 1, 1},
+			 (char[]){2, 2, 0},
+			 (char[]){0, 2, 2},
 			 (char[]){0, 0, 0}},
 	 	.length = 3,
 		.position = {0}
 	},
-	// shape T
+	// 3. shape T
 	{
 		.array = (char *[]){
 			 (char[]){0, 0, 0},
-			 (char[]){1, 1, 1},
-			 (char[]){0, 1, 0}},
+			 (char[]){3, 3, 3},
+			 (char[]){0, 3, 0}},
 	 	.length = 3,
 		.position = {0}
 	 },
-	// shape L
+	// 4. shape L
 	{
 		.array = (char *[]){
-			 (char[]){1, 0, 0},
-			 (char[]){1, 0, 0},
-			 (char[]){1, 1, 0}},
+			 (char[]){4, 0, 0},
+			 (char[]){4, 0, 0},
+			 (char[]){4, 4, 0}},
 	 	.length = 3,
 		.position = {0}
 	 },
-	// shape J
+	// 5. shape J
 	{
 		.array = (char *[]){
-			 (char[]){0, 0, 1},
-			 (char[]){0, 0, 1},
-			 (char[]){0, 1, 1}},
+			 (char[]){0, 0, 5},
+			 (char[]){0, 0, 5},
+			 (char[]){0, 5, 5}},
 	 	.length = 3,
 		.position = {0}
 	 },
-	// shape O
+	// 6. shape O
 	{
 		.array = (char *[]){
-			 (char[]){1, 1},
-			 (char[]){1, 1}},
+			 (char[]){6, 6},
+			 (char[]){6, 6}},
 	 	.length = 2,
 		.position = {0}
 	 },
-	// shape I
+	// 7. shape I
 	{
 		.array = (char *[]){
-			 (char[]){0, 0, 1, 0},
-			 (char[]){0, 0, 1, 0},
-			 (char[]){0, 0, 1, 0},
-			 (char[]){0, 0, 1, 0}},
+			 (char[]){0, 0, 7, 0},
+			 (char[]){0, 0, 7, 0},
+			 (char[]){0, 0, 7, 0},
+			 (char[]){0, 0, 7, 0}},
 	 	.length = 4,
 		.position = {0}
 	 }};
@@ -140,4 +150,14 @@ void merge_tetromino_to_board(const t_tetromino piece, t_board board) {
 			}
         }
     }
+}
+
+void init_curses_tetromino_colors(void) {
+	init_pair(TETROMINO_S, COLOR_BLACK, COLOR_GREEN);
+	init_pair(TETROMINO_Z, COLOR_WHITE, COLOR_RED);
+	init_pair(TETROMINO_T, COLOR_WHITE, COLOR_MAGENTA);
+	init_pair(TETROMINO_L, COLOR_BLACK, COLOR_WHITE); // shape L is orange but ncurses doesn't have orange color
+	init_pair(TETROMINO_J, COLOR_WHITE, COLOR_BLUE);
+	init_pair(TETROMINO_O, COLOR_BLACK, COLOR_YELLOW);
+	init_pair(TETROMINO_I, COLOR_BLACK, COLOR_CYAN);
 }

@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:22:45 by susami            #+#    #+#             */
-/*   Updated: 2022/08/12 23:16:14 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/13 00:23:40 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <sys/time.h>
 #define ROW_SIZE 20
 #define COL_SIZE 15
+#define ENABLE_COLOR false
 
 typedef enum {
     MOVE_DOWN,
@@ -56,6 +57,7 @@ t_tetromino duplicate_tetromino(const t_tetromino piece);
 void destroy_tetromino(t_tetromino piece);
 bool is_valid_position(const t_tetromino piece, const t_board board);
 void merge_tetromino_to_board(const t_tetromino piece, t_board board);
+void init_curses_tetromino_colors(void);
 
 // tetris_move.c
 t_move to_move(int ch);
