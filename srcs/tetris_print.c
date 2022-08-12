@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:40 by susami            #+#    #+#             */
-/*   Updated: 2022/08/13 01:30:45 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/13 01:56:47 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,26 +120,26 @@ static void printw_cell(const char cell) {
     switch (cell) {
         case 0:
             printw("%c ", EMPTY_CELL);
-            break;
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-            if (ENABLE_COLOR) {
-                attron(COLOR_PAIR(cell));
-                printw("%c ", FILLED_CELL);
-                attroff(COLOR_PAIR(cell));
-            } else {
-                printw("%c ", FILLED_CELL);
-            }
-            break;
-        default:
-            printw("%c ", UNKNOWN_CELL);
-            break;
-    }
+			break;
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+			if (COLOR_ENABLED) {
+				attron(COLOR_PAIR(cell));
+            	printw("%c ", FILLED_CELL);
+				attroff(COLOR_PAIR(cell));
+			} else {
+            	printw("%c ", FILLED_CELL);
+			}
+			break;
+		default:
+			printw("%c ", UNKNOWN_CELL);
+			break;
+	}
 }
 
 static void print_cell(const char cell) {

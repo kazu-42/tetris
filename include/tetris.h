@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:22:45 by susami            #+#    #+#             */
-/*   Updated: 2022/08/13 00:30:34 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/13 01:50:11 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <sys/time.h>
 #define ROW_SIZE 20
 #define COL_SIZE 15
-#define ENABLE_COLOR false
+#define COLOR_ENABLED false
 
 typedef enum {
     MOVE_DOWN,
