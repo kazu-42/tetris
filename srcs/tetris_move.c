@@ -6,10 +6,11 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:59 by susami            #+#    #+#             */
-/*   Updated: 2022/08/13 00:37:15 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/13 01:14:59 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <ncurses.h>
 #include "tetris.h"
 
 t_move to_move(int ch);
@@ -39,13 +40,17 @@ static void reverse_individual_cols_matrix(char **matrix, const int size);
 
 static void swap(char *a, char *b);
 
+// Convert key from getch() to t_move
 t_move to_move(const int ch) {
     switch (ch) {
         case 's':
+		case KEY_DOWN:
             return MOVE_DOWN;
         case 'a':
+		case KEY_LEFT:
             return MOVE_LEFT;
         case 'd':
+		case KEY_RIGHT:
             return MOVE_RIGHT;
         case 'w':
             return MOVE_ROTATE_CLOCKWISE;
