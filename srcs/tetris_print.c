@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:40 by susami            #+#    #+#             */
-/*   Updated: 2022/08/13 00:23:21 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/13 00:35:02 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,18 @@
 #define FILLED_CELL '#'
 #define UNKNOWN_CELL '?'
 
-// print.c
-void printw_tetris_screen(const t_board board, const t_tetromino piece, int score);
-void print_tetris_result_screen(int score, const t_board board);
+void printw_tetris_screen(const t_board board, const t_tetromino piece, const int score);
+void print_tetris_result_screen(const int score, const t_board board);
 static void printw_title_in_center(void);
 static void print_game_over_text(void);
-static void printw_board(const char buffer[ROW_SIZE][COL_SIZE]);
-static void print_board(const char buffer[ROW_SIZE][COL_SIZE]);
-static void printw_score(int score);
-static void print_score(int score);
+static void printw_board(const t_board board);
+static void print_board(const t_board board);
+static void printw_score(const int score);
+static void print_score(const int score);
+static void printw_cell(const char cell);
+static void print_cell(const char cell);
 
-void printw_tetris_screen(const t_board board, const t_tetromino piece, int score) {
+void printw_tetris_screen(const t_board board, const t_tetromino piece, const int score) {
     t_board buffer;
 	// copy board and piece to buffer
 	memmove(buffer, board, sizeof(t_board));
@@ -44,7 +45,7 @@ void printw_tetris_screen(const t_board board, const t_tetromino piece, int scor
 	printw_score(score);
 }
 
-void print_tetris_result_screen(int score, const t_board board) {
+void print_tetris_result_screen(const int score, const t_board board) {
 	print_board(board);
 	print_game_over_text();
     print_score(score);
@@ -62,15 +63,35 @@ static void print_game_over_text(void) {
     printf("Game over!\n");
 }
 
-static void printw_score(int score) {
+static void printw_score(const int score) {
     printw("Score: %d\n", score);
 }
 
-static void print_score(int score) {
+static void print_score(const int score) {
     printf("Score: %d\n", score);
 }
 
-static void printw_cell(char cell) {
+static void printw_board(const t_board board) {
+    for (int r = 0; r < ROW_SIZE; r++) {
+        for (int c = 0; c < COL_SIZE; c++) {
+			printw_cell(board[r][c]);
+        }
+        printw("\n");
+    }
+	printw("\n");
+}
+
+static void print_board(const t_board board) {
+    for (int r = 0; r < ROW_SIZE; r++) {
+        for (int c = 0; c < COL_SIZE; c++) {
+			print_cell(board[r][c]);
+        }
+        printf("\n");
+    }
+	printf("\n");
+}
+
+static void printw_cell(const char cell) {
 	switch (cell) {
 		case 0:
             printw("%c ", EMPTY_CELL);
@@ -96,7 +117,7 @@ static void printw_cell(char cell) {
 	}
 }
 
-static void print_cell(char cell) {
+static void print_cell(const char cell) {
 	switch (cell) {
 		case 0:
             printf("%c ", EMPTY_CELL);
@@ -114,24 +135,4 @@ static void print_cell(char cell) {
 			printf("%c ", UNKNOWN_CELL);
 			break;
 	}
-}
-
-static void printw_board(const t_board buffer) {
-    for (int r = 0; r < ROW_SIZE; r++) {
-        for (int c = 0; c < COL_SIZE; c++) {
-			printw_cell(buffer[r][c]);
-        }
-        printw("\n");
-    }
-	printw("\n");
-}
-
-static void print_board(const t_board buffer) {
-    for (int r = 0; r < ROW_SIZE; r++) {
-        for (int c = 0; c < COL_SIZE; c++) {
-			print_cell(buffer[r][c]);
-        }
-        printf("\n");
-    }
-	printf("\n");
 }

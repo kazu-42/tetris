@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:49 by susami            #+#    #+#             */
-/*   Updated: 2022/08/12 22:48:34 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/13 00:32:26 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,11 @@
 #define GRAVITY_INCREASE_PER_LINE 0.01
 
 void apply_gravity(t_context *ctx);
-bool is_time_to_fall(t_timeval last_fell_at, double gravity);
-static bool is_line_filled(int row, const t_board board);
-static void clear_line(int row, t_board board);
+bool is_time_to_fall(const t_timeval last_fell_at, const double gravity);
+static bool is_line_filled(const int row, const t_board board);
+static void clear_line(const int row, t_board board);
 static int	clear_filled_lines(t_board board);
-static void increase_gravity(double *gravity, int lines_cleared);
+static void increase_gravity(double *gravity, const int lines_cleared);
 
 // When certain period of time is passed since last updates, piece falls by gravity.
 void apply_gravity(t_context *ctx) {
@@ -45,13 +45,11 @@ void apply_gravity(t_context *ctx) {
 
 // The greater the gravity is, the faster the piece falls.
 // Gravity is expressed in unit G, where 1G = 1 cell per frame, and 0.1G = 1 cell per 10 frames.
-bool is_time_to_fall(t_timeval last_fell_at, double gravity) {
+bool is_time_to_fall(const t_timeval last_fell_at, const double gravity) {
     t_timeval now;
-	time_t elapsed_usec;
-	double droppage;
 
     gettimeofday(&now, NULL);
-    elapsed_usec = (now.tv_sec - last_fell_at.tv_sec) * ONE_SECOND_IN_USEC +
+    const time_t elapsed_usec = (now.tv_sec - last_fell_at.tv_sec) * ONE_SECOND_IN_USEC +
                                (now.tv_usec - last_fell_at.tv_usec);
 	// elapsed_usec 		: [usec]
 	// ONE_SECOND_IN_USEC 	: [usec / sec] 
@@ -59,11 +57,11 @@ bool is_time_to_fall(t_timeval last_fell_at, double gravity) {
 	// gravity				: [cell / frame]
 	
 	// droppage				: [cell] = [usec] / [usec / sec] * [frame / sec] * [cell / frame]
-	droppage = (double)elapsed_usec / ONE_SECOND_IN_USEC * FRAME_PER_SECOND * gravity;
+	const double droppage = (double)elapsed_usec / ONE_SECOND_IN_USEC * FRAME_PER_SECOND * gravity;
 	return droppage >= 1;
 }
 
-static bool is_line_filled(int row, const t_board board) {
+static bool is_line_filled(const int row, const t_board board) {
     for (int c = 0; c < COL_SIZE; c++) {
         if (!board[row][c])
             return false;
@@ -71,7 +69,7 @@ static bool is_line_filled(int row, const t_board board) {
     return true;
 }
 
-static void clear_line(int row, t_board board) {
+static void clear_line(const int row, t_board board) {
     //move all rows above down one row
     //move backwards to achieve a non-destructive manner.
     for (int r = row; r >= 1; r--)
@@ -95,6 +93,6 @@ static int	clear_filled_lines(t_board board) {
 	return num_cleared;
 }
 
-static void increase_gravity(double *gravity, int lines_cleared) {
+static void increase_gravity(double *gravity, const int lines_cleared) {
 	*gravity = *gravity + GRAVITY_INCREASE_PER_LINE * lines_cleared;
 }

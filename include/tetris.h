@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:22:45 by susami            #+#    #+#             */
-/*   Updated: 2022/08/13 00:23:40 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/13 00:30:34 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,9 +66,9 @@ bool try_move_tetromino(t_move move, t_tetromino *piece, const t_board board);
 
 // tetris_gravity.c
 void apply_gravity(t_context *ctx);
-bool is_time_to_fall(t_timeval last_fell_at, double gravity);
+bool is_time_to_fall(const t_timeval last_fell_at, const double gravity);
 
 // tetris_print.c
-void printw_tetris_screen(const t_board board, const t_tetromino piece, int score);
-void print_tetris_result_screen(int score, const t_board board);
+void printw_tetris_screen(const t_board board, const t_tetromino piece, const int score);
+void print_tetris_result_screen(const int score, const t_board board);
 #endif
