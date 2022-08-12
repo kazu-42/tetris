@@ -6,46 +6,133 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:40 by susami            #+#    #+#             */
-/*   Updated: 2022/08/12 17:10:39 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/13 00:35:02 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ncurses.h>
 #include <stdio.h>
-#include "../include/tetris.h"
+#include <string.h>
+#include "tetris.h"
 
-// print.c
-void printw_current_screen(const t_board board, const t_tetromino current, int score);
-void print_result(int score, const t_board board);
+// WIN_SIZE is about 2x of COL_SIZE because space is added between each cell
+#define WIN_SIZE (2 * COL_SIZE - 1)
+#define TETRIS_TITLE "42 tetris"
+#define EMPTY_CELL '.'
+#define FILLED_CELL '#'
+#define UNKNOWN_CELL '?'
 
-void printw_current_screen(const t_board board, const t_tetromino current, int score) {
-    char buffer[ROW_SIZE][COL_SIZE] = {0};
-    for (int i = 0; i < current.length; i++) {
-        for (int j = 0; j < current.length; j++) {
-            if (current.array[i][j])
-                buffer[current.row + i][current.col + j] = current.array[i][j];
-        }
-    }
-    clear();
-    for (int c = 0; c < COL_SIZE - 9; c++)
+void printw_tetris_screen(const t_board board, const t_tetromino piece, const int score);
+void print_tetris_result_screen(const int score, const t_board board);
+static void printw_title_in_center(void);
+static void print_game_over_text(void);
+static void printw_board(const t_board board);
+static void print_board(const t_board board);
+static void printw_score(const int score);
+static void print_score(const int score);
+static void printw_cell(const char cell);
+static void print_cell(const char cell);
+
+void printw_tetris_screen(const t_board board, const t_tetromino piece, const int score) {
+    t_board buffer;
+	// copy board and piece to buffer
+	memmove(buffer, board, sizeof(t_board));
+	merge_tetromino_to_board(piece, buffer);
+
+    clear(); // clears curses window
+	printw_title_in_center();
+	printw_board(buffer);
+	printw_score(score);
+}
+
+void print_tetris_result_screen(const int score, const t_board board) {
+	print_board(board);
+	print_game_over_text();
+    print_score(score);
+}
+
+static void printw_title_in_center(void) {
+	static const int title_len = strlen(TETRIS_TITLE);
+    for (int c = 0; c < (WIN_SIZE - title_len) / 2; c++)
         printw(" ");
-    printw("42 Tetris\n");
+    printw(TETRIS_TITLE);
+    printw("\n");
+}
+
+static void print_game_over_text(void) {
+    printf("Game over!\n");
+}
+
+static void printw_score(const int score) {
+    printw("Score: %d\n", score);
+}
+
+static void print_score(const int score) {
+    printf("Score: %d\n", score);
+}
+
+static void printw_board(const t_board board) {
     for (int r = 0; r < ROW_SIZE; r++) {
         for (int c = 0; c < COL_SIZE; c++) {
-            printw("%c ", (board[r][c] + buffer[r][c]) ? '#' : '.');
+			printw_cell(board[r][c]);
         }
         printw("\n");
     }
-    printw("\nScore: %d\n", score);
+	printw("\n");
 }
 
-void print_result(int score, const t_board board) {
+static void print_board(const t_board board) {
     for (int r = 0; r < ROW_SIZE; r++) {
         for (int c = 0; c < COL_SIZE; c++) {
-            printf("%c ", board[r][c] ? '#' : '.');
+			print_cell(board[r][c]);
         }
-        putchar('\n');
+        printf("\n");
     }
-    printf("\nGame over!\n");
-    printf("\nScore: %d\n", score);
+	printf("\n");
+}
+
+static void printw_cell(const char cell) {
+	switch (cell) {
+		case 0:
+            printw("%c ", EMPTY_CELL);
+			break;
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+			if (ENABLE_COLOR) {
+				attron(COLOR_PAIR(cell));
+            	printw("%c ", FILLED_CELL);
+				attroff(COLOR_PAIR(cell));
+			} else {
+            	printw("%c ", FILLED_CELL);
+			}
+			break;
+		default:
+			printw("%c ", UNKNOWN_CELL);
+			break;
+	}
+}
+
+static void print_cell(const char cell) {
+	switch (cell) {
+		case 0:
+            printf("%c ", EMPTY_CELL);
+			break;
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+            printf("%c ", FILLED_CELL);
+			break;
+		default:
+			printf("%c ", UNKNOWN_CELL);
+			break;
+	}
 }
