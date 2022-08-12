@@ -48,7 +48,7 @@ void run_tetris(t_context *ctx) {
 	init_curses();
 
 	// print initial screen to window
-    printw_current_screen(ctx->board, ctx->current, ctx->score);
+    printw_tetris_screen(ctx->board, ctx->current, ctx->score);
 
 	// loop while game is not over
     while (ctx->game_on) {
@@ -59,11 +59,11 @@ void run_tetris(t_context *ctx) {
 			if (move == MOVE_DOWN && moved) {
 				gettimeofday(&ctx->last_fell_at, NULL);
 			}
-            printw_current_screen(ctx->board, ctx->current, ctx->score);
+            printw_tetris_screen(ctx->board, ctx->current, ctx->score);
         }
         if (is_time_to_fall(ctx->last_fell_at, ctx->gravity)) {
 			apply_gravity(ctx);
-            printw_current_screen(ctx->board, ctx->current, ctx->score);
+            printw_tetris_screen(ctx->board, ctx->current, ctx->score);
 			gettimeofday(&ctx->last_fell_at, NULL);
         }
     }
@@ -72,7 +72,7 @@ void run_tetris(t_context *ctx) {
 	destroy_curses();
 
 	// print the final score and board
-    print_result(ctx->score, ctx->board);
+    print_tetris_result_screen(ctx->score, ctx->board);
 }
 
 void destroy_context(t_context *ctx) {

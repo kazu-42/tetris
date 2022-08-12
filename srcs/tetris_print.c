@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:40 by susami            #+#    #+#             */
-/*   Updated: 2022/08/12 23:07:41 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/12 23:16:15 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@
 #define TETRIS_TITLE "42 tetris"
 
 // print.c
-void printw_current_screen(const t_board board, const t_tetromino current, int score);
-void print_result(int score, const t_board board);
+void printw_tetris_screen(const t_board board, const t_tetromino piece, int score);
+void print_tetris_result_screen(int score, const t_board board);
 static void printw_title_in_center(void);
 static void print_game_over_text(void);
 static void printw_board(const char buffer[ROW_SIZE][COL_SIZE]);
@@ -29,11 +29,11 @@ static void print_board(const char buffer[ROW_SIZE][COL_SIZE]);
 static void printw_score(int score);
 static void print_score(int score);
 
-void printw_current_screen(const t_board board, const t_tetromino current, int score) {
+void printw_tetris_screen(const t_board board, const t_tetromino piece, int score) {
     t_board buffer;
 	// copy board and piece to buffer
 	memmove(buffer, board, sizeof(t_board));
-	merge_tetromino_to_board(current, buffer);
+	merge_tetromino_to_board(piece, buffer);
 
     clear(); // clears curses window
 	printw_title_in_center();
@@ -41,7 +41,7 @@ void printw_current_screen(const t_board board, const t_tetromino current, int s
 	printw_score(score);
 }
 
-void print_result(int score, const t_board board) {
+void print_tetris_result_screen(int score, const t_board board) {
 	print_board(board);
 	print_game_over_text();
     print_score(score);
