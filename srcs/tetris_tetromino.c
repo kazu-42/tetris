@@ -16,14 +16,6 @@
 
 #define NUM_TETRIMINOS 7
 
-void destroy_tetromino(t_tetromino piece);
-
-bool is_valid_position(const t_tetromino piece, const t_board board);
-
-void merge_tetromino_to_board(const t_tetromino piece, t_board board);
-
-void init_curses_tetromino_colors(void);
-
 // Non-zero value in array represents the cell of the tetromino.
 // The value varies to express colors of the shape.
 //
