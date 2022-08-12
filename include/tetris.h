@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #ifndef TETRIS_H
-# define TETRIS_H
+#define TETRIS_H
 
 #include <stdbool.h>
 #include <sys/time.h>
@@ -29,14 +29,14 @@ typedef enum {
 } t_move;
 
 typedef struct {
-	int row;
-	int col;
+    int row;
+    int col;
 } t_position;
 
 typedef struct {
     char **array;
-    int length; // length is max(width, height) of the tetromino
-	t_position position;
+    int length;// length is max(width, height) of the tetromino
+    t_position position;
 } t_tetromino;
 
 typedef char t_board[ROW_SIZE][COL_SIZE];
@@ -46,7 +46,7 @@ typedef struct {
     int score;
     bool game_on;
     t_board board;
-	double gravity;
+    double gravity;
     t_tetromino current;
     t_timeval last_fell_at;
 } t_context;
