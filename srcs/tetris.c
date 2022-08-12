@@ -60,9 +60,6 @@ void run_tetris(t_context *ctx) {
 			gettimeofday(&ctx->updated_at, NULL);
         }
     }
-
-	// print the final result to terminal
-    print_result(ctx->score, ctx->board);
 }
 
 void destroy_context(t_context *ctx) {
@@ -80,7 +77,8 @@ int main(void) {
 	init_curses();
     init_context(&ctx);
     run_tetris(&ctx);
-    destroy_context(&ctx);
 	destroy_curses();
+    print_result(ctx.score, ctx.board);
+    destroy_context(&ctx);
     return 0;
 }

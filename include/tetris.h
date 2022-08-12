@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:22:45 by susami            #+#    #+#             */
-/*   Updated: 2022/08/12 18:20:30 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/12 20:55:33 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ typedef enum {
     MOVE_DOWN,
     MOVE_LEFT,
     MOVE_RIGHT,
-    MOVE_ROTATE,
+    MOVE_ROTATE_CLOCKWISE,
+    MOVE_ROTATE_COUNTER_CLOCKWISE,
     MOVE_UNKNOWN,
 } t_move;
 
