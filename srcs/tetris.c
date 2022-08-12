@@ -5,8 +5,7 @@
 #define DEFAULT_GRAVITY 0.1
 #define CURSES_READ_INTERVAL_MILLISEC 1
 
-// main.c
-void init_seed(void);
+void init_srand_seed(void);
 
 void init_curses(void);
 
@@ -17,6 +16,12 @@ void destroy_context(t_context *ctx);
 void destroy_curses(void);
 
 void run_tetris(t_context *ctx);
+
+// Use current timestamp as randomness seed
+void init_srand_seed(void) {
+	const unsigned int seed = (unsigned int)time(NULL);
+    srand(seed);
+}
 
 // Before calling this function, Randomness seed should be set by srand().
 void init_context(t_context *ctx) {
@@ -30,14 +35,6 @@ void init_context(t_context *ctx) {
     gettimeofday(&ctx->last_fell_at, NULL);
 }
 
-// Use current timestamp as randomness seed
-void init_seed(void) {
-    unsigned int seed;
-
-    seed = (unsigned int) time(NULL);
-    srand(seed);
-}
-
 // init screen and configure blocking read interval
 void init_curses(void) {
     initscr();
@@ -48,11 +45,8 @@ void init_curses(void) {
     timeout(CURSES_READ_INTERVAL_MILLISEC);
 }
 
+// Run the tetris game loop until the game is over
 void run_tetris(t_context *ctx) {
-    int key_input;
-    t_move move;
-    bool moved;
-
     // initialize curses window
     init_curses();
 
@@ -61,13 +55,13 @@ void run_tetris(t_context *ctx) {
 
     // loop while game is not over
     while (ctx->game_on) {
-        key_input = getch();
+		const int key_input = getch();
         if (key_input != ERR) {
-            move = to_move(key_input);
-            moved = try_move_tetromino(move, &ctx->current, ctx->board);
-            if (move == MOVE_DOWN && moved) {
-                gettimeofday(&ctx->last_fell_at, NULL);
-            }
+			const t_move move = to_move(key_input);
+            const bool moved = try_move_tetromino(move, &ctx->current, ctx->board);
+			if (move == MOVE_DOWN && moved) {
+				gettimeofday(&ctx->last_fell_at, NULL);
+			}
             printw_tetris_screen(ctx->board, ctx->current, ctx->score);
         }
         if (is_time_to_fall(ctx->last_fell_at, ctx->gravity)) {
@@ -95,7 +89,7 @@ void destroy_curses(void) {
 int main(void) {
     t_context ctx;
 
-    init_seed();
+	init_srand_seed();
     init_context(&ctx);
     run_tetris(&ctx);
     destroy_context(&ctx);
