@@ -43,6 +43,9 @@ void run_tetris(t_context *ctx) {
     int key_input;
 	t_move move;
 
+	// initialize curses window
+	init_curses();
+
 	// print initial screen to window
     printw_current_screen(ctx->board, ctx->current, ctx->score);
 
@@ -60,6 +63,12 @@ void run_tetris(t_context *ctx) {
 			gettimeofday(&ctx->updated_at, NULL);
         }
     }
+
+	// destroy curses window
+	destroy_curses();
+
+	// print the final score and board
+    print_result(ctx->score, ctx->board);
 }
 
 void destroy_context(t_context *ctx) {
@@ -74,11 +83,8 @@ int main(void) {
     t_context ctx;
 
 	init_seed();
-	init_curses();
     init_context(&ctx);
     run_tetris(&ctx);
-	destroy_curses();
-    print_result(ctx.score, ctx.board);
     destroy_context(&ctx);
     return 0;
 }
