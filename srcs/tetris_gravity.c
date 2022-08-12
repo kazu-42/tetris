@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:49 by susami            #+#    #+#             */
-/*   Updated: 2022/08/12 21:53:04 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/12 22:48:34 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 
 void apply_gravity(t_context *ctx);
 bool is_time_to_fall(t_timeval last_fell_at, double gravity);
-static void lock_tetromino_to_board(const t_tetromino piece, t_board board);
 static bool is_line_filled(int row, const t_board board);
 static void clear_line(int row, t_board board);
 static int	clear_filled_lines(t_board board);
@@ -32,7 +31,7 @@ void apply_gravity(t_context *ctx) {
 
 	is_tetoromino_landed = !try_move_tetromino(MOVE_DOWN, &ctx->current, ctx->board);
     if (is_tetoromino_landed) {
-        lock_tetromino_to_board(ctx->current, ctx->board);
+        merge_tetromino_to_board(ctx->current, ctx->board);
 		lines_cleared = clear_filled_lines(ctx->board);
         ctx->score += SCORE_PER_LINE * lines_cleared;
 		increase_gravity(&ctx->gravity, lines_cleared);
@@ -62,15 +61,6 @@ bool is_time_to_fall(t_timeval last_fell_at, double gravity) {
 	// droppage				: [cell] = [usec] / [usec / sec] * [frame / sec] * [cell / frame]
 	droppage = (double)elapsed_usec / ONE_SECOND_IN_USEC * FRAME_PER_SECOND * gravity;
 	return droppage >= 1;
-}
-
-static void lock_tetromino_to_board(const t_tetromino piece, t_board board) {
-    for (int i = 0; i < piece.length; i++) {
-        for (int j = 0; j < piece.length; j++) {
-            if (piece.array[i][j])
-                board[piece.row + i][piece.col + j] = piece.array[i][j];
-        }
-    }
 }
 
 static bool is_line_filled(int row, const t_board board) {

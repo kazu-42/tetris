@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:59 by susami            #+#    #+#             */
-/*   Updated: 2022/08/12 21:03:24 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/12 22:13:58 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,15 +89,15 @@ static bool has_room_to_move(t_move move, const t_tetromino piece, const t_board
 }
 
 static void move_tetromino_down(t_tetromino *piece) {
-    piece->row++;
+    piece->position.row++;
 }
 
 static void move_tetromino_right(t_tetromino *piece) {
-    piece->col++;
+    piece->position.col++;
 }
 
 static void move_tetromino_left(t_tetromino *piece) {
-    piece->col--;
+    piece->position.col--;
 }
 
 /*

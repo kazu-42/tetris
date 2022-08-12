@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:22:45 by susami            #+#    #+#             */
-/*   Updated: 2022/08/12 21:45:05 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/12 22:48:03 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,14 @@ typedef enum {
 } t_move;
 
 typedef struct {
+	int row;
+	int col;
+} t_position;
+
+typedef struct {
     char **array;
-    int length, row, col;
+    int length; // length is max(width, height) of the tetromino
+	t_position position;
 } t_tetromino;
 
 typedef char t_board[ROW_SIZE][COL_SIZE];
@@ -49,6 +55,7 @@ t_tetromino generate_random_tetromino(void);
 t_tetromino duplicate_tetromino(const t_tetromino piece);
 void destroy_tetromino(t_tetromino piece);
 bool is_valid_position(const t_tetromino piece, const t_board board);
+void merge_tetromino_to_board(const t_tetromino piece, t_board board);
 
 // tetris_move.c
 t_move to_move(int ch);
