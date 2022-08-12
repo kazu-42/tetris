@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include <stdlib.h>
-#include "tetris.h"
+#include "../include/tetris.h"
 
 #define NUM_TETRIMINOS 7
 t_tetromino generate_random_tetromino(void);

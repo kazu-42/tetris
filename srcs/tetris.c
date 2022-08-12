@@ -1,6 +1,6 @@
 #include <ncurses.h>
 #include <stdlib.h>
-#include "tetris.h"
+#include "../include/tetris.h"
 
 #define DEFAULT_GRAVITY 0.1
 #define CURSES_READ_INTERVAL_MILLISEC 1

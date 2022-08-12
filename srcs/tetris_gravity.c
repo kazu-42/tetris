@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "tetris.h"
+#include "../include/tetris.h"
 
 #define ONE_SECOND_IN_USEC 1000000
 #define FRAME_PER_SECOND 10
