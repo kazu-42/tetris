@@ -22,7 +22,7 @@ void init_context(t_context *ctx) {
 			.gravity = DEFAULT_GRAVITY
 	};
 	ctx->current = generate_random_tetromino();
-    gettimeofday(&ctx->updated_at, NULL);
+    gettimeofday(&ctx->last_fell_at, NULL);
 }
 
 // Use current timestamp as randomness seed
@@ -42,6 +42,7 @@ void init_curses(void) {
 void run_tetris(t_context *ctx) {
     int key_input;
 	t_move move;
+	bool moved;
 
 	// initialize curses window
 	init_curses();
@@ -54,13 +55,16 @@ void run_tetris(t_context *ctx) {
 		key_input = getch();
         if (key_input != ERR) {
 			move = to_move(key_input);
-            try_move_tetromino(move, &ctx->current, ctx->board);
+            moved = try_move_tetromino(move, &ctx->current, ctx->board);
+			if (move == MOVE_DOWN && moved) {
+				gettimeofday(&ctx->last_fell_at, NULL);
+			}
             printw_current_screen(ctx->board, ctx->current, ctx->score);
         }
-        if (is_time_to_fall(ctx->updated_at, ctx->gravity)) {
+        if (is_time_to_fall(ctx->last_fell_at, ctx->gravity)) {
 			apply_gravity(ctx);
             printw_current_screen(ctx->board, ctx->current, ctx->score);
-			gettimeofday(&ctx->updated_at, NULL);
+			gettimeofday(&ctx->last_fell_at, NULL);
         }
     }
 

@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:49 by susami            #+#    #+#             */
-/*   Updated: 2022/08/12 18:20:45 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/12 21:53:04 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #define GRAVITY_INCREASE_PER_LINE 0.01
 
 void apply_gravity(t_context *ctx);
-int is_time_to_fall(t_timeval updated_at, double gravity);
+bool is_time_to_fall(t_timeval last_fell_at, double gravity);
 static void lock_tetromino_to_board(const t_tetromino piece, t_board board);
 static bool is_line_filled(int row, const t_board board);
 static void clear_line(int row, t_board board);
@@ -46,14 +46,22 @@ void apply_gravity(t_context *ctx) {
 
 // The greater the gravity is, the faster the piece falls.
 // Gravity is expressed in unit G, where 1G = 1 cell per frame, and 0.1G = 1 cell per 10 frames.
-int is_time_to_fall(t_timeval updated_at, double gravity) {
+bool is_time_to_fall(t_timeval last_fell_at, double gravity) {
     t_timeval now;
 	time_t elapsed_usec;
+	double droppage;
 
     gettimeofday(&now, NULL);
-    elapsed_usec = (now.tv_sec - updated_at.tv_sec) * ONE_SECOND_IN_USEC +
-                               (now.tv_usec - updated_at.tv_usec);
-	return ((double)elapsed_usec * gravity) > (ONE_SECOND_IN_USEC / FRAME_PER_SECOND);
+    elapsed_usec = (now.tv_sec - last_fell_at.tv_sec) * ONE_SECOND_IN_USEC +
+                               (now.tv_usec - last_fell_at.tv_usec);
+	// elapsed_usec 		: [usec]
+	// ONE_SECOND_IN_USEC 	: [usec / sec] 
+	// FRAME_PER_SECOND		: [frame / sec]
+	// gravity				: [cell / frame]
+	
+	// droppage				: [cell] = [usec] / [usec / sec] * [frame / sec] * [cell / frame]
+	droppage = (double)elapsed_usec / ONE_SECOND_IN_USEC * FRAME_PER_SECOND * gravity;
+	return droppage >= 1;
 }
 
 static void lock_tetromino_to_board(const t_tetromino piece, t_board board) {

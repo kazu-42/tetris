@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:22:45 by susami            #+#    #+#             */
-/*   Updated: 2022/08/12 20:55:33 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/12 21:45:05 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ typedef struct {
     t_board board;
 	double gravity;
     t_tetromino current;
-    t_timeval updated_at;
+    t_timeval last_fell_at;
 } t_context;
 
 // tetris_tetromino.c
@@ -57,7 +57,7 @@ bool try_move_tetromino(t_move move, t_tetromino *piece, const t_board board);
 
 // tetris_gravity.c
 void apply_gravity(t_context *ctx);
-int is_time_to_fall(t_timeval updated_at, double gravity);
+bool is_time_to_fall(t_timeval last_fell_at, double gravity);
 
 // tetris_print.c
 void printw_current_screen(const t_board board, const t_tetromino current, int score);

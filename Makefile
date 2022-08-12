@@ -28,11 +28,11 @@ clean:
 
 .PHONY: fclean
 fclean: clean
-	$(RM) $(NAME)
+	$(RM) $(NAME) $(NAME)_debug
 
 .PHONY: re
 re: fclean all
 
 .PHONY: debug
 debug: fclean
-	gcc tetris.c $(LIBRARY) -o $(NAME) $(CFLAGS) $(INCLUDE) -Weverything
+	gcc $(SRCS) -o $(NAME)_debug $(LIBRARY) $(CFLAGS) $(INCLUDE) -Weverything -Wno-padded -Wno-poison-system-directories
