@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../include/tetris.h"
 #include <ncurses.h>
 #include <stdio.h>
-#include "../include/tetris.h"
 
 // print.c
 void printw_current_screen(const t_board board, const t_tetromino current, int score);

@@ -40,10 +40,10 @@ t_move to_move(int ch) {
 bool try_move_tetromino(t_move move, t_tetromino *piece, const t_board board) {
     if (has_room_to_move(move, *piece, board)) {
         move_tetromino(move, piece);
-		return true;
+        return true;
     } else {
-		return false;
-	}
+        return false;
+    }
 }
 
 void move_tetromino(t_move move, t_tetromino *piece) {
@@ -60,17 +60,17 @@ void move_tetromino(t_move move, t_tetromino *piece) {
         case MOVE_ROTATE:
             rotate_tetromino_clockwise(piece);
             break;
-		case MOVE_UNKNOWN:
+        case MOVE_UNKNOWN:
             return;
     }
 }
 
 static bool has_room_to_move(t_move move, const t_tetromino piece, const t_board board) {
-	bool	has_room_to_move;
+    bool has_room_to_move;
     t_tetromino temp;
 
-	temp = duplicate_tetromino(piece);
-	move_tetromino(move, &temp);
+    temp = duplicate_tetromino(piece);
+    move_tetromino(move, &temp);
     has_room_to_move = is_valid_position(temp, board);
     destroy_tetromino(temp);
     return has_room_to_move;

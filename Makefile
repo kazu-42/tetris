@@ -35,4 +35,4 @@ re: fclean all
 
 .PHONY: debug
 debug: fclean
-	gcc tetris.c $(LIBRARY) -o $(NAME) $(CFLAGS) $(INCLUDE) -Weverything
+	gcc $(SRC_DIR)/*.c $(LIBRARY) -o $(NAME) $(CFLAGS) $(INCLUDE) -Weverything
