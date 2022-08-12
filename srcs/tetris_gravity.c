@@ -17,10 +17,6 @@
 #define SCORE_PER_LINE 100
 #define GRAVITY_INCREASE_PER_LINE 0.01
 
-void apply_gravity(t_context *ctx);
-
-bool is_time_to_fall(const t_timeval last_fell_at, const double gravity);
-
 static bool is_line_filled(const int row, const t_board board);
 
 static void clear_line(const int row, t_board board);

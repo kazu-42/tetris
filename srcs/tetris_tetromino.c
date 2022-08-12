@@ -24,10 +24,6 @@
 
 #define NUM_TETRIMINOS 7
 
-t_tetromino generate_random_tetromino(void);
-
-t_tetromino duplicate_tetromino(const t_tetromino piece);
-
 void destroy_tetromino(t_tetromino piece);
 
 bool is_valid_position(const t_tetromino piece, const t_board board);

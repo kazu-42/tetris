@@ -13,12 +13,6 @@
 #include "tetris.h"
 #include <ncurses.h>
 
-t_move to_move(int ch);
-
-void move_tetromino(const t_move move, t_tetromino *piece);
-
-bool try_move_tetromino(const t_move move, t_tetromino *piece, const t_board board);
-
 static bool has_room_to_move(const t_move move, const t_tetromino piece, const t_board board);
 
 static void move_tetromino_down(t_tetromino *piece);

@@ -22,10 +22,6 @@
 #define FILLED_CELL '#'
 #define UNKNOWN_CELL '?'
 
-void printw_tetris_screen(const t_board board, const t_tetromino piece, const int score);
-
-void print_tetris_result_screen(const int score, const t_board board);
-
 static void printw_title_in_center(void);
 
 static void print_game_over_text(void);
