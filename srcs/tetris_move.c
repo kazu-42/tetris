@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/tetris.h"
+#include "tetris.h"
 
 t_move to_move(int ch);
 void move_tetromino(const t_move move, t_tetromino *piece);

@@ -13,7 +13,7 @@
 #include <ncurses.h>
 #include <stdio.h>
 #include <string.h>
-#include "../srcs/tetris.h"
+#include "tetris.h"
 
 // WIN_SIZE is about 2x of COL_SIZE because space is added between each cell
 #define WIN_SIZE (2 * COL_SIZE - 1)
