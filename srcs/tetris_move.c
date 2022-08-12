@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <ncurses.h>
 #include "tetris.h"
+#include <ncurses.h>
 
 t_move to_move(int ch);
 
@@ -44,13 +44,13 @@ static void swap(char *a, char *b);
 t_move to_move(const int ch) {
     switch (ch) {
         case 's':
-		case KEY_DOWN:
+        case KEY_DOWN:
             return MOVE_DOWN;
         case 'a':
-		case KEY_LEFT:
+        case KEY_LEFT:
             return MOVE_LEFT;
         case 'd':
-		case KEY_RIGHT:
+        case KEY_RIGHT:
             return MOVE_RIGHT;
         case 'w':
             return MOVE_ROTATE_CLOCKWISE;
@@ -189,9 +189,9 @@ static void reverse_individual_cols_matrix(char **matrix, const int size) {
 }
 
 static void swap(char *a, char *b) {
-	char tmp;
+    char tmp;
 
-	tmp = *a;
-	*a = *b;
-	*b = tmp;
+    tmp = *a;
+    *a = *b;
+    *b = tmp;
 }

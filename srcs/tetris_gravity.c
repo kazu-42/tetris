@@ -69,7 +69,7 @@ bool is_time_to_fall(const t_timeval last_fell_at, const double gravity) {
 
 static bool is_line_filled(const int row, const t_board board) {
     for (int c = 0; c < COL_SIZE; c++) {
-		const bool is_cell_empty = !board[row][c];
+        const bool is_cell_empty = !board[row][c];
         if (is_cell_empty) { return false; }
     }
     return true;

@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <ncurses.h>
 #include "tetris.h"
+#include <ncurses.h>
+#include <stdlib.h>
 
 #define TETROMINO_S 1
 #define TETROMINO_Z 2
@@ -125,10 +125,10 @@ static const t_tetromino tetrominoes[NUM_TETRIMINOS] = {
 };
 
 t_tetromino generate_random_tetromino(void) {
-	const int random_tetromino_id = rand() % NUM_TETRIMINOS;
+    const int random_tetromino_id = rand() % NUM_TETRIMINOS;
     t_tetromino new_piece = duplicate_tetromino(tetrominoes[random_tetromino_id]);
 
-	const int random_position_col = rand() % (COL_SIZE - new_piece.length + 1);
+    const int random_position_col = rand() % (COL_SIZE - new_piece.length + 1);
     new_piece.position.col = random_position_col;
     new_piece.position.row = 0;
     return new_piece;
@@ -161,15 +161,15 @@ void destroy_tetromino(t_tetromino piece) {
 bool is_valid_position(const t_tetromino piece, const t_board board) {
     for (int i = 0; i < piece.length; i++) {
         for (int j = 0; j < piece.length; j++) {
-			const bool is_empty_cell = !piece.array[i][j];
+            const bool is_empty_cell = !piece.array[i][j];
             if (is_empty_cell) { continue; }
             const int r = piece.position.row + i;
-			const int c = piece.position.col + j;
+            const int c = piece.position.col + j;
 
-			const bool is_position_out_of_range = c < 0 || c >= COL_SIZE || r >= ROW_SIZE;
+            const bool is_position_out_of_range = c < 0 || c >= COL_SIZE || r >= ROW_SIZE;
             if (is_position_out_of_range) { return false; }
 
-			const bool is_board_already_filled = board[r][c];
+            const bool is_board_already_filled = board[r][c];
             if (is_board_already_filled) { return false; }
         }
     }
@@ -179,10 +179,10 @@ bool is_valid_position(const t_tetromino piece, const t_board board) {
 void merge_tetromino_to_board(const t_tetromino piece, t_board board) {
     for (int i = 0; i < piece.length; i++) {
         for (int j = 0; j < piece.length; j++) {
-			const bool is_filled_cell = piece.array[i][j];
+            const bool is_filled_cell = piece.array[i][j];
             if (is_filled_cell) {
-				int row = piece.position.row + i;
-				int col = piece.position.col + j;
+                int row = piece.position.row + i;
+                int col = piece.position.col + j;
                 board[row][col] = piece.array[i][j];
             }
         }
@@ -191,14 +191,14 @@ void merge_tetromino_to_board(const t_tetromino piece, t_board board) {
 
 // When using colors in curses window, this function should be called.
 void init_curses_tetromino_colors(void) {
-	if (has_colors()) {
-		start_color();
-		init_pair(TETROMINO_S, COLOR_BLACK, COLOR_GREEN);
-		init_pair(TETROMINO_Z, COLOR_WHITE, COLOR_RED);
-		init_pair(TETROMINO_T, COLOR_WHITE, COLOR_MAGENTA);
-		init_pair(TETROMINO_L, COLOR_BLACK, COLOR_WHITE); // shape L is orange but ncurses doesn't have orange color
-		init_pair(TETROMINO_J, COLOR_WHITE, COLOR_BLUE);
-		init_pair(TETROMINO_O, COLOR_BLACK, COLOR_YELLOW);
-		init_pair(TETROMINO_I, COLOR_BLACK, COLOR_CYAN);
-	}
+    if (has_colors()) {
+        start_color();
+        init_pair(TETROMINO_S, COLOR_BLACK, COLOR_GREEN);
+        init_pair(TETROMINO_Z, COLOR_WHITE, COLOR_RED);
+        init_pair(TETROMINO_T, COLOR_WHITE, COLOR_MAGENTA);
+        init_pair(TETROMINO_L, COLOR_BLACK, COLOR_WHITE);// shape L is orange but ncurses doesn't have orange color
+        init_pair(TETROMINO_J, COLOR_WHITE, COLOR_BLUE);
+        init_pair(TETROMINO_O, COLOR_BLACK, COLOR_YELLOW);
+        init_pair(TETROMINO_I, COLOR_BLACK, COLOR_CYAN);
+    }
 }

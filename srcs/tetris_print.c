@@ -10,10 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "tetris.h"
 #include <ncurses.h>
 #include <stdio.h>
 #include <string.h>
-#include "tetris.h"
 
 // WIN_SIZE is about 2x of COL_SIZE because space is added between each cell
 #define WIN_SIZE (2 * COL_SIZE - 1)
@@ -54,7 +54,7 @@ void printw_tetris_screen(const t_board board, const t_tetromino piece, const in
     memmove(buffer, board, sizeof(t_board));
     merge_tetromino_to_board(piece, buffer);
 
-    clear(); // clears curses window
+    clear();// clears curses window
     printw_title_in_center();
     printw_board(buffer);
     printw_score(score);
@@ -120,26 +120,26 @@ static void printw_cell(const char cell) {
     switch (cell) {
         case 0:
             printw("%c ", EMPTY_CELL);
-			break;
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5:
-		case 6:
-		case 7:
-			if (COLOR_ENABLED) {
-				attron(COLOR_PAIR(cell));
-            	printw("%c ", FILLED_CELL);
-				attroff(COLOR_PAIR(cell));
-			} else {
-            	printw("%c ", FILLED_CELL);
-			}
-			break;
-		default:
-			printw("%c ", UNKNOWN_CELL);
-			break;
-	}
+            break;
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+            if (COLOR_ENABLED) {
+                attron(COLOR_PAIR(cell));
+                printw("%c ", FILLED_CELL);
+                attroff(COLOR_PAIR(cell));
+            } else {
+                printw("%c ", FILLED_CELL);
+            }
+            break;
+        default:
+            printw("%c ", UNKNOWN_CELL);
+            break;
+    }
 }
 
 static void print_cell(const char cell) {
