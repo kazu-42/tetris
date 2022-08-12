@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:59 by susami            #+#    #+#             */
-/*   Updated: 2022/08/13 01:14:59 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/13 01:56:09 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,14 +141,6 @@ static void rotate_tetromino_counter_clockwise(t_tetromino *piece) {
     reverse_individual_cols_matrix(piece->array, piece->length);
 }
 
-static void swap(char *a, char *b) {
-    char tmp;
-
-    tmp = *a;
-    *a = *b;
-    *b = tmp;
-}
-
 /*
 1  2  3    [transpose]    1  4  7   [reverse rows]  7  4  1
 4  5  6  -------------->  2  5  8  -------------->  8  5  2
@@ -194,4 +186,12 @@ static void reverse_individual_cols_matrix(char **matrix, const int size) {
             high--;
         }
     }
+}
+
+static void swap(char *a, char *b) {
+	char tmp;
+
+	tmp = *a;
+	*a = *b;
+	*b = tmp;
 }
