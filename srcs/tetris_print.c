@@ -6,7 +6,7 @@
 /*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/12 16:55:40 by susami            #+#    #+#             */
-/*   Updated: 2022/08/13 00:35:02 by susami           ###   ########.fr       */
+/*   Updated: 2022/08/13 01:30:45 by susami           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,12 @@ static void printw_cell(const char cell);
 
 static void print_cell(const char cell);
 
+// Print the game screen to the curses window.
+// Information below are displayed.
+// - Title of the game
+// - Piece which is currently falling
+// - Board
+// - Score
 void printw_tetris_screen(const t_board board, const t_tetromino piece, const int score) {
     t_board buffer;
     // copy board and piece to buffer
@@ -54,6 +60,11 @@ void printw_tetris_screen(const t_board board, const t_tetromino piece, const in
     printw_score(score);
 }
 
+// Print the game result to the terminal standard output.
+// Information below are displayed.
+// - Board
+// - Game over text
+// - Score
 void print_tetris_result_screen(const int score, const t_board board) {
     print_board(board);
     print_game_over_text();
@@ -72,6 +83,11 @@ static void print_game_over_text(void) {
     printf("Game over!\n");
 }
 
+/*
+ printw_xxx and print_xxx functions below look very similar, 
+ but it's much easier to maintain with these similar lines
+ when it comes to pretty formatting like adding colors and so on.
+*/
 static void printw_score(const int score) {
     printw("Score: %d\n", score);
 }
