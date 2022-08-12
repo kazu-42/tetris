@@ -13,19 +13,30 @@
 #include "tetris.h"
 
 t_move to_move(int ch);
+
 void move_tetromino(const t_move move, t_tetromino *piece);
+
 bool try_move_tetromino(const t_move move, t_tetromino *piece, const t_board board);
+
 static bool has_room_to_move(const t_move move, const t_tetromino piece, const t_board board);
+
 static void move_tetromino_down(t_tetromino *piece);
+
 static void move_tetromino_right(t_tetromino *piece);
+
 static void move_tetromino_left(t_tetromino *piece);
+
 static void rotate_tetromino_clockwise(t_tetromino *piece);
+
 static void rotate_tetromino_counter_clockwise(t_tetromino *piece);
 
 // functions to manipulate square matrix
 static void transpose_matrix(char **matrix, const int size);
+
 static void reverse_individual_rows_matrix(char **matrix, const int size);
+
 static void reverse_individual_cols_matrix(char **matrix, const int size);
+
 static void swap(char *a, char *b);
 
 t_move to_move(const int ch) {
@@ -38,8 +49,8 @@ t_move to_move(const int ch) {
             return MOVE_RIGHT;
         case 'w':
             return MOVE_ROTATE_CLOCKWISE;
-		case 'q':
-			return MOVE_ROTATE_COUNTER_CLOCKWISE;
+        case 'q':
+            return MOVE_ROTATE_COUNTER_CLOCKWISE;
         default:
             return MOVE_UNKNOWN;
     }
@@ -49,10 +60,10 @@ t_move to_move(const int ch) {
 bool try_move_tetromino(const t_move move, t_tetromino *piece, const t_board board) {
     if (has_room_to_move(move, *piece, board)) {
         move_tetromino(move, piece);
-		return true;
+        return true;
     } else {
-		return false;
-	}
+        return false;
+    }
 }
 
 void move_tetromino(const t_move move, t_tetromino *piece) {
@@ -72,14 +83,14 @@ void move_tetromino(const t_move move, t_tetromino *piece) {
         case MOVE_ROTATE_COUNTER_CLOCKWISE:
             rotate_tetromino_counter_clockwise(piece);
             break;
-		case MOVE_UNKNOWN:
+        case MOVE_UNKNOWN:
             return;
     }
 }
 
 static bool has_room_to_move(const t_move move, const t_tetromino piece, const t_board board) {
     t_tetromino temp = duplicate_tetromino(piece);
-	move_tetromino(move, &temp);
+    move_tetromino(move, &temp);
     const bool has_room_to_move = is_valid_position(temp, board);
     destroy_tetromino(temp);
     return has_room_to_move;
@@ -107,8 +118,8 @@ Approach:
 7  8  9                   3  6  9                   9  6  3
 */
 static void rotate_tetromino_clockwise(t_tetromino *piece) {
-	transpose_matrix(piece->array, piece->length);
-	reverse_individual_rows_matrix(piece->array, piece->length);
+    transpose_matrix(piece->array, piece->length);
+    reverse_individual_rows_matrix(piece->array, piece->length);
 }
 
 /*
@@ -121,16 +132,16 @@ Approach:
 7  8  9                   3  6  9                   1  4  7
 */
 static void rotate_tetromino_counter_clockwise(t_tetromino *piece) {
-	transpose_matrix(piece->array, piece->length);
-	reverse_individual_cols_matrix(piece->array, piece->length);
+    transpose_matrix(piece->array, piece->length);
+    reverse_individual_cols_matrix(piece->array, piece->length);
 }
 
 static void swap(char *a, char *b) {
-	char tmp;
+    char tmp;
 
-	tmp = *a;
-	*a = *b;
-	*b = tmp;
+    tmp = *a;
+    *a = *b;
+    *b = tmp;
 }
 
 /*
@@ -153,8 +164,8 @@ static void transpose_matrix(char **matrix, const int size) {
 */
 static void reverse_individual_rows_matrix(char **matrix, const int size) {
     for (int row = 0; row < size; row++) {
-		int low = 0;
-		int high = size - 1;
+        int low = 0;
+        int high = size - 1;
         while (low < high) {
             swap(&matrix[row][low], &matrix[row][high]);
             low++;
@@ -170,8 +181,8 @@ static void reverse_individual_rows_matrix(char **matrix, const int size) {
 */
 static void reverse_individual_cols_matrix(char **matrix, const int size) {
     for (int col = 0; col < size; col++) {
-		int low = 0;
-		int high = size - 1;
+        int low = 0;
+        int high = size - 1;
         while (low < high) {
             swap(&matrix[low][col], &matrix[high][col]);
             low++;
