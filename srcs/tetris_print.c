@@ -11,16 +11,13 @@
 /* ************************************************************************** */
 
 #include "tetris.h"
+#include "config.h"
 #include <ncurses.h>
 #include <stdio.h>
 #include <string.h>
 
 // WIN_SIZE is about 2x of COL_SIZE because space is added between each cell
-#define WIN_SIZE (2 * COL_SIZE - 1)
-#define TETRIS_TITLE "42 tetris"
-#define EMPTY_CELL '.'
-#define FILLED_CELL '#'
-#define UNKNOWN_CELL '?'
+# define WIN_SIZE (2 * COL_SIZE - 1)
 
 static void printw_title_in_center(void);
 
@@ -114,17 +111,17 @@ static void print_board(const t_board board) {
 
 static void printw_cell(const char cell) {
     switch (cell) {
-        case 0:
+        case TETROMINO_NULL:
             printw("%c ", EMPTY_CELL);
             break;
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-            if (COLOR_ENABLED) {
+        case TETROMINO_S:
+        case TETROMINO_Z:
+        case TETROMINO_T:
+        case TETROMINO_L:
+        case TETROMINO_J:
+        case TETROMINO_O:
+        case TETROMINO_I:
+            if (COLOR_MODE) {
                 attron(COLOR_PAIR(cell));
                 printw("%c ", FILLED_CELL);
                 attroff(COLOR_PAIR(cell));
@@ -140,16 +137,16 @@ static void printw_cell(const char cell) {
 
 static void print_cell(const char cell) {
     switch (cell) {
-        case 0:
+        case TETROMINO_NULL:
             printf("%c ", EMPTY_CELL);
             break;
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
+        case TETROMINO_S:
+        case TETROMINO_Z:
+        case TETROMINO_T:
+        case TETROMINO_L:
+        case TETROMINO_J:
+        case TETROMINO_O:
+        case TETROMINO_I:
             printf("%c ", FILLED_CELL);
             break;
         default:

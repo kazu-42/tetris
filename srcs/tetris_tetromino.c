@@ -14,14 +14,6 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
-#define TETROMINO_S 1
-#define TETROMINO_Z 2
-#define TETROMINO_T 3
-#define TETROMINO_L 4
-#define TETROMINO_J 5
-#define TETROMINO_O 6
-#define TETROMINO_I 7
-
 #define NUM_TETRIMINOS 7
 
 void destroy_tetromino(t_tetromino piece);
