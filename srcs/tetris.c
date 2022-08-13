@@ -25,7 +25,7 @@ void init_context(t_context *ctx) {
     *ctx = (t_context){
             .score = 0,
             .game_on = true,
-            .board = {0},
+            .board = {{0}},
             .gravity = DEFAULT_GRAVITY};
     ctx->current = generate_random_tetromino();
     gettimeofday(&ctx->last_fell_at, NULL);
