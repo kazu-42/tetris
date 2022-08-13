@@ -1,7 +1,8 @@
 #include "../include/tetris.h"
 
 #define ONE_SECOND_IN_USEC 1000000
-#define FRAME_PER_SECOND 10
+
+static bool is_time_to_lock(const t_timeval last_fell_at);
 
 static bool is_line_filled(const int row, const t_board board);
 
@@ -13,13 +14,14 @@ static void increase_gravity(double *gravity, const int lines_cleared);
 
 // When certain period of time is passed since last updates, piece falls by gravity.
 void apply_gravity(t_context *ctx) {
-    bool is_tetoromino_landed;
-    int lines_cleared;
-
-    is_tetoromino_landed = !try_move_tetromino(MOVE_DOWN, &ctx->current, ctx->board);
-    if (is_tetoromino_landed) {
+    const bool is_moved = try_move_tetromino(MOVE_DOWN, &ctx->current, ctx->board);
+    if (is_moved) {
+        gettimeofday(&ctx->last_fell_at, NULL);
+    }
+    const bool is_tetromino_landed = !has_room_to_move(MOVE_DOWN, ctx->current, ctx->board);
+    if (is_tetromino_landed && is_time_to_lock(ctx->last_fell_at)) {
         merge_tetromino_to_board(ctx->current, ctx->board);
-        lines_cleared = clear_filled_lines(ctx->board);
+        const int lines_cleared = clear_filled_lines(ctx->board);
         ctx->score += SCORE_PER_LINE * lines_cleared;
         increase_gravity(&ctx->gravity, lines_cleared);
         destroy_tetromino(ctx->current);
@@ -47,6 +49,15 @@ bool is_time_to_fall(const t_timeval last_fell_at, const double gravity) {
     // droppage				: [cell] = [usec] / [usec / sec] * [frame / sec] * [cell / frame]
     const double droppage = (double) elapsed_usec / ONE_SECOND_IN_USEC * FRAME_PER_SECOND * gravity;
     return droppage >= 1;
+}
+
+static bool is_time_to_lock(const t_timeval last_fell_at) {
+    t_timeval now;
+
+    gettimeofday(&now, NULL);
+    const time_t elapsed_usec = (now.tv_sec - last_fell_at.tv_sec) * ONE_SECOND_IN_USEC +
+                                (now.tv_usec - last_fell_at.tv_usec);
+    return elapsed_usec >= SOFT_DROP_HOLD_THRESHOLD_USEC;
 }
 
 static bool is_line_filled(const int row, const t_board board) {
@@ -84,5 +95,11 @@ static int clear_filled_lines(t_board board) {
 // Increase gravity according to how many lines cleared.
 // This function should be used to adjust the game level.
 static void increase_gravity(double *gravity, const int lines_cleared) {
-    *gravity = *gravity + GRAVITY_INCREASE_PER_LINE * lines_cleared;
+    const double increase = GRAVITY_INCREASE_PER_LINE * lines_cleared;
+
+    if (*gravity + increase > MAX_GRAVITY) {
+        *gravity = MAX_GRAVITY;
+    } else {
+        *gravity = *gravity + increase;
+    }
 }
