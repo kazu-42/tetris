@@ -36,9 +36,9 @@ static const t_tetromino tetrominoes[NUM_TETRIMINOS] = {
         //   #
         {
                 .array = (char *[]) {
-                        (char[]) {0, 0, 0},
                         (char[]) {3, 3, 3},
-                        (char[]) {0, 3, 0}},
+                        (char[]) {0, 3, 0},
+                        (char[]) {0, 0, 0}},
                 .length = 3,
                 .position = {0}
         },

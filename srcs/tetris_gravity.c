@@ -26,6 +26,7 @@ void apply_gravity(t_context *ctx) {
         increase_gravity(&ctx->gravity, lines_cleared);
         destroy_tetromino(ctx->current);
         ctx->current = generate_random_tetromino();
+        gettimeofday(&ctx->last_fell_at, NULL);
         if (!is_valid_position(ctx->current, ctx->board)) {
             ctx->game_on = false;
         }
