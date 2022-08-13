@@ -35,7 +35,7 @@ void init_context(t_context *ctx) {
 void init_curses(void) {
     initscr();
     keypad(stdscr, true);
-    if (COLOR_MODE) {
+    if (COLOR_ENABLED) {
         init_curses_tetromino_colors();
     }
     timeout(CURSES_READ_INTERVAL_MILLISEC);

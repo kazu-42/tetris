@@ -108,7 +108,7 @@ static void printw_cell(const char cell) {
         case TETROMINO_J:
         case TETROMINO_O:
         case TETROMINO_I:
-            if (COLOR_MODE) {
+            if (COLOR_ENABLED) {
                 attron(COLOR_PAIR(cell));
                 printw("%c ", FILLED_CELL);
                 attroff(COLOR_PAIR(cell));
