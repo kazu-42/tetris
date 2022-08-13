@@ -1,23 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   tetris.h                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/12 16:22:45 by susami            #+#    #+#             */
-/*   Updated: 2022/08/13 01:50:11 by susami           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef TETRIS_H
 #define TETRIS_H
 
 #include <stdbool.h>
 #include <sys/time.h>
-#define ROW_SIZE 20
-#define COL_SIZE 15
-#define COLOR_ENABLED false
+#include "config.h"
+
+# define TETROMINO_NULL 0
+# define TETROMINO_S 1
+# define TETROMINO_Z 2
+# define TETROMINO_T 3
+# define TETROMINO_L 4
+# define TETROMINO_J 5
+# define TETROMINO_O 6
+# define TETROMINO_I 7
 
 typedef enum {
     MOVE_DOWN,
@@ -71,4 +66,5 @@ bool is_time_to_fall(const t_timeval last_fell_at, const double gravity);
 // tetris_print.c
 void printw_tetris_screen(const t_board board, const t_tetromino piece, const int score);
 void print_tetris_result_screen(const int score, const t_board board);
-#endif
+
+#endif //TETRIS_H

@@ -1,25 +1,7 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   tetris_gravity.c                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/12 16:55:49 by susami            #+#    #+#             */
-/*   Updated: 2022/08/13 01:08:10 by susami           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "tetris.h"
+#include "../include/tetris.h"
 
 #define ONE_SECOND_IN_USEC 1000000
 #define FRAME_PER_SECOND 10
-#define SCORE_PER_LINE 100
-#define GRAVITY_INCREASE_PER_LINE 0.01
-
-void apply_gravity(t_context *ctx);
-
-bool is_time_to_fall(const t_timeval last_fell_at, const double gravity);
 
 static bool is_line_filled(const int row, const t_board board);
 

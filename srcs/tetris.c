@@ -1,9 +1,6 @@
-#include "tetris.h"
+#include "../include/tetris.h"
 #include <ncurses.h>
 #include <stdlib.h>
-
-#define DEFAULT_GRAVITY 0.1
-#define CURSES_READ_INTERVAL_MILLISEC 1
 
 void init_srand_seed(void);
 

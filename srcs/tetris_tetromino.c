@@ -1,40 +1,8 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   tetris_tetromino.c                                 :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/12 16:55:45 by susami            #+#    #+#             */
-/*   Updated: 2022/08/13 01:57:19 by susami           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "tetris.h"
+#include "../include/tetris.h"
 #include <ncurses.h>
 #include <stdlib.h>
 
-#define TETROMINO_S 1
-#define TETROMINO_Z 2
-#define TETROMINO_T 3
-#define TETROMINO_L 4
-#define TETROMINO_J 5
-#define TETROMINO_O 6
-#define TETROMINO_I 7
-
 #define NUM_TETRIMINOS 7
-
-t_tetromino generate_random_tetromino(void);
-
-t_tetromino duplicate_tetromino(const t_tetromino piece);
-
-void destroy_tetromino(t_tetromino piece);
-
-bool is_valid_position(const t_tetromino piece, const t_board board);
-
-void merge_tetromino_to_board(const t_tetromino piece, t_board board);
-
-void init_curses_tetromino_colors(void);
 
 // Non-zero value in array represents the cell of the tetromino.
 // The value varies to express colors of the shape.

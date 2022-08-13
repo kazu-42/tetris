@@ -1,30 +1,10 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   tetris_print.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: susami <susami@student.42tokyo.jp>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/12 16:55:40 by susami            #+#    #+#             */
-/*   Updated: 2022/08/13 01:56:47 by susami           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "tetris.h"
+#include "../include/tetris.h"
 #include <ncurses.h>
 #include <stdio.h>
 #include <string.h>
 
 // WIN_SIZE is about 2x of COL_SIZE because space is added between each cell
-#define WIN_SIZE (2 * COL_SIZE - 1)
-#define TETRIS_TITLE "42 tetris"
-#define EMPTY_CELL '.'
-#define FILLED_CELL '#'
-#define UNKNOWN_CELL '?'
-
-void printw_tetris_screen(const t_board board, const t_tetromino piece, const int score);
-
-void print_tetris_result_screen(const int score, const t_board board);
+# define WIN_SIZE (2 * COL_SIZE - 1)
 
 static void printw_title_in_center(void);
 
@@ -118,16 +98,16 @@ static void print_board(const t_board board) {
 
 static void printw_cell(const char cell) {
     switch (cell) {
-        case 0:
+        case TETROMINO_NULL:
             printw("%c ", EMPTY_CELL);
             break;
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
+        case TETROMINO_S:
+        case TETROMINO_Z:
+        case TETROMINO_T:
+        case TETROMINO_L:
+        case TETROMINO_J:
+        case TETROMINO_O:
+        case TETROMINO_I:
             if (COLOR_ENABLED) {
                 attron(COLOR_PAIR(cell));
                 printw("%c ", FILLED_CELL);
@@ -144,16 +124,16 @@ static void printw_cell(const char cell) {
 
 static void print_cell(const char cell) {
     switch (cell) {
-        case 0:
+        case TETROMINO_NULL:
             printf("%c ", EMPTY_CELL);
             break;
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
+        case TETROMINO_S:
+        case TETROMINO_Z:
+        case TETROMINO_T:
+        case TETROMINO_L:
+        case TETROMINO_J:
+        case TETROMINO_O:
+        case TETROMINO_I:
             printf("%c ", FILLED_CELL);
             break;
         default:
