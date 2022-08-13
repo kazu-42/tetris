@@ -54,8 +54,8 @@ void run_tetris(t_context *ctx) {
         const int key_input = getch();
         if (key_input != ERR) {
             const t_move move = to_move(key_input);
-            const bool moved = try_move_tetromino(move, &ctx->current, ctx->board);
-            if (move == MOVE_DOWN && moved) {
+            const bool is_moved = try_move_tetromino(move, &ctx->current, ctx->board);
+            if (move == MOVE_DOWN && is_moved) {
                 gettimeofday(&ctx->last_fell_at, NULL);
             }
             printw_tetris_screen(ctx->board, ctx->current, ctx->score);
@@ -63,7 +63,6 @@ void run_tetris(t_context *ctx) {
         if (is_time_to_fall(ctx->last_fell_at, ctx->gravity)) {
             apply_gravity(ctx);
             printw_tetris_screen(ctx->board, ctx->current, ctx->score);
-            gettimeofday(&ctx->last_fell_at, NULL);
         }
     }
 

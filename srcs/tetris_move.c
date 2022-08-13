@@ -1,8 +1,6 @@
 #include "../include/tetris.h"
 #include <ncurses.h>
 
-static bool has_room_to_move(const t_move move, const t_tetromino piece, const t_board board);
-
 static void move_tetromino_down(t_tetromino *piece);
 
 static void move_tetromino_right(t_tetromino *piece);
@@ -75,7 +73,7 @@ void move_tetromino(const t_move move, t_tetromino *piece) {
     }
 }
 
-static bool has_room_to_move(const t_move move, const t_tetromino piece, const t_board board) {
+bool has_room_to_move(const t_move move, const t_tetromino piece, const t_board board) {
     t_tetromino temp = duplicate_tetromino(piece);
     move_tetromino(move, &temp);
     const bool has_room_to_move = is_valid_position(temp, board);

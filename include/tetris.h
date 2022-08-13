@@ -58,6 +58,8 @@ void init_curses_tetromino_colors(void);
 t_move to_move(int ch);
 void move_tetromino(t_move move, t_tetromino *piece);
 bool try_move_tetromino(t_move move, t_tetromino *piece, const t_board board);
+bool has_room_to_move(const t_move move, const t_tetromino piece, const t_board board);
+
 
 // tetris_gravity.c
 void apply_gravity(t_context *ctx);
