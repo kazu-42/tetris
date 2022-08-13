@@ -122,9 +122,9 @@ static void rotate_tetromino_counter_clockwise(t_tetromino *piece) {
 }
 
 /*
-1  2  3    [transpose]    1  4  7   [reverse rows]  7  4  1
-4  5  6  -------------->  2  5  8  -------------->  8  5  2
-7  8  9                   3  6  9                   9  6  3
+1  2  3    [transpose]    1  4  7
+4  5  6  -------------->  2  5  8
+7  8  9                   3  6  9
 */
 static void transpose_matrix(char **matrix, const int size) {
     for (int i = 0; i < size; i++) {
